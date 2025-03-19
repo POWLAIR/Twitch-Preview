@@ -18,7 +18,7 @@ export const TWITCH_API = {
     // URL de redirection pour l'authentification OAuth
     // L'ID de l'extension est automatiquement ajouté pour permettre
     // à la page de redirection de renvoyer le token à la bonne extension
-    REDIRECT_URI: `https://twitch-preview-knmaelxc5-powlairs-projects.vercel.app/oauth-redirect.html?extension_id=${browser.runtime.id}`,
+    REDIRECT_URI: `https://twitch-preview.vercel.app/oauth-redirect.html?extension_id=${browser.runtime.id}`,
     
     // Permissions demandées à l'utilisateur
     SCOPES: [
