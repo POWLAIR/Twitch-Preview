@@ -150,19 +150,4 @@ export async function getFollowedStreams(token, userId, first = 100) {
     }) || [];
 
     return { streams };
-}
-
-// Se désabonner d'une chaîne
-export async function unfollowChannel(token, userId, broadcasterId) {
-    if (!userId || !broadcasterId) {
-        throw new Error('ID utilisateur et ID broadcaster requis');
-    }
-
-    const params = new URLSearchParams({
-        user_id: userId,
-        broadcaster_id: broadcasterId
-    });
-
-    await twitchApiRequest(`/users/follows?${params}`, 'DELETE', token);
-    return { success: true };
 } 
