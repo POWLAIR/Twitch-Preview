@@ -16,13 +16,25 @@ export const TWITCH_API = {
     API_URL: 'https://api.twitch.tv/helix',
     
     // URL de redirection pour l'authentification OAuth
-    // L'ID de l'extension est automatiquement ajouté pour permettre
-    // à la page de redirection de renvoyer le token à la bonne extension
-    REDIRECT_URI: `https://twitch-preview.vercel.app/oauth-redirect.html?extension_id=${browser.runtime.id}`,
+    REDIRECT_URI: 'https://twitch-preview.vercel.app/oauth-redirect.html',
     
     // Permissions demandées à l'utilisateur
     SCOPES: [
         'user:read:follows',    // Pour obtenir les chaînes suivies
         'user:read:email'       // Pour obtenir les informations de l'utilisateur
-    ]
+    ],
+
+    // Génère l'URL d'authentification complète
+    getAuthURL() {
+        const params = new URLSearchParams({
+            client_id: this.CLIENT_ID,
+            redirect_uri: `${this.REDIRECT_URI}?extension_id=${browser.runtime.id}`,
+            response_type: 'token',
+            scope: this.SCOPES.join(' '),
+            force_verify: 'false',
+            state: crypto.randomUUID()
+        });
+        
+        return `${this.AUTH_URL}?${params.toString()}`;
+    }
 };
