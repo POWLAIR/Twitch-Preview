@@ -15,9 +15,8 @@ export const TWITCH_API = {
     VALIDATE_URL: 'https://id.twitch.tv/oauth2/validate',
     API_URL: 'https://api.twitch.tv/helix',
     
-    // L'URL de redirection hébergée sur GitHub Pages
-    // Remplacez par https://[votre-nom-utilisateur].github.io/[nom-du-repo]/oauth-redirect.html
-    REDIRECT_URI: 'https://votre-nom.github.io/twitch-preview/oauth-redirect.html',
+    // URL de redirection Vercel avec l'ID de l'extension
+    REDIRECT_URI: `https://twitch-preview-knmaelxc5-powlairs-projects.vercel.app/oauth-redirect.html?extension_id=${browser.runtime.id}`,
     
     // Les scopes nécessaires pour l'application
     SCOPES: [

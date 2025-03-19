@@ -34,7 +34,6 @@
             border-radius: 50%;
             margin: 0 auto 1rem;
             animation: spin 1s linear infinite;
-            display: none;
         }
 
         @keyframes spin {
@@ -61,7 +60,7 @@
 <body>
     <div class="container">
         <div class="spinner" id="spinner"></div>
-        <p id="message">Vérification de la redirection...</p>
+        <p id="message">Traitement de l'authentification...</p>
         <p id="error" class="error"></p>
         <p id="success" class="success"></p>
     </div>
@@ -70,6 +69,10 @@
         const errorElement = document.getElementById('error');
         const successElement = document.getElementById('success');
         const spinnerElement = document.getElementById('spinner');
+
+        // Récupère l'ID de l'extension depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const extensionId = urlParams.get('extension_id');
 
         function showError(message) {
             spinnerElement.style.display = 'none';
@@ -85,30 +88,10 @@
             successElement.style.display = 'block';
         }
 
-        function validateOrigin() {
-            // Vérifie si la page a été ouverte par l'extension
-            const opener = window.opener;
-            if (!opener) {
-                showError('Accès non autorisé : cette page doit être ouverte depuis l\'extension Twitch Preview');
-                return false;
-            }
-
-            // Vérifie l'origine de l'extension (moz-extension://)
-            const openerOrigin = opener.origin;
-            if (!openerOrigin.startsWith('moz-extension://')) {
-                showError('Origine non autorisée');
-                return false;
-            }
-
-            return true;
-        }
-
-        async function handleRedirect() {
+        async function handleAuth() {
             try {
-                spinnerElement.style.display = 'block';
-
-                // Vérifie l'origine
-                if (!validateOrigin()) {
+                if (!extensionId) {
+                    showError('ID de l\'extension manquant dans l\'URL');
                     return;
                 }
 
@@ -128,23 +111,23 @@
                     return;
                 }
 
-                // Envoie le token à l'extension
-                showSuccess('Authentification réussie !');
-                window.opener.postMessage({ type: 'TWITCH_AUTH_SUCCESS', token: accessToken }, '*');
+                // Redirige vers l'extension avec le token
+                const extensionUrl = `moz-extension://${extensionId}/src/auth/auth.html#access_token=${accessToken}`;
+                showSuccess('Authentification réussie ! Redirection...');
                 
-                // Ferme la fenêtre après un court délai
+                // Redirige vers l'extension après un court délai
                 setTimeout(() => {
-                    window.close();
-                }, 2000);
+                    window.location.href = extensionUrl;
+                }, 1000);
 
             } catch (error) {
-                showError('Une erreur est survenue lors de la redirection');
+                showError('Une erreur est survenue lors de l\'authentification');
                 console.error('Erreur:', error);
             }
         }
 
-        // Lance la redirection au chargement de la page
-        document.addEventListener('DOMContentLoaded', handleRedirect);
+        // Lance l'authentification au chargement de la page
+        document.addEventListener('DOMContentLoaded', handleAuth);
     </script>
 </body>
 </html> 

@@ -39,6 +39,7 @@ async function handleAuth() {
         }
     } catch (error) {
         showError(error.message);
+        console.error('Erreur:', error);
     }
 }
 
