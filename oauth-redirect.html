@@ -41,92 +41,81 @@
             100% { transform: rotate(360deg); }
         }
 
+        .message {
+            margin-bottom: 1rem;
+        }
+
         .error {
             color: #FF4747;
-            margin-top: 1rem;
-            padding: 1rem;
             background-color: rgba(255, 71, 71, 0.1);
             border-radius: 4px;
-            display: none;
+            padding: 1rem;
         }
 
         .success {
             color: #00FF00;
-            margin-top: 1rem;
+        }
+
+        .hidden {
             display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="spinner" id="spinner"></div>
-        <p id="message">Traitement de l'authentification...</p>
-        <p id="error" class="error"></p>
-        <p id="success" class="success"></p>
+        <div id="spinner" class="spinner"></div>
+        <p id="message" class="message">Traitement de l'authentification...</p>
     </div>
     <script>
         const messageElement = document.getElementById('message');
-        const errorElement = document.getElementById('error');
-        const successElement = document.getElementById('success');
         const spinnerElement = document.getElementById('spinner');
 
-        // Récupère l'ID de l'extension depuis l'URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const extensionId = urlParams.get('extension_id');
-
-        function showError(message) {
-            spinnerElement.style.display = 'none';
-            messageElement.style.display = 'none';
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
-
-        function showSuccess(message) {
-            spinnerElement.style.display = 'none';
-            messageElement.style.display = 'none';
-            successElement.textContent = message;
-            successElement.style.display = 'block';
+        function updateUI(message, type = 'info') {
+            spinnerElement.classList.toggle('hidden', type !== 'info');
+            messageElement.textContent = message;
+            messageElement.className = `message ${type}`;
         }
 
         async function handleAuth() {
             try {
+                // Récupère l'ID de l'extension depuis l'URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const extensionId = urlParams.get('extension_id');
+
                 if (!extensionId) {
-                    showError('ID de l\'extension manquant dans l\'URL');
+                    updateUI('ID de l\'extension manquant dans l\'URL', 'error');
                     return;
                 }
 
-                // Récupère les paramètres de l'URL
+                // Récupère le token depuis le hash de l'URL
                 const params = new URLSearchParams(window.location.hash.substring(1));
                 const accessToken = params.get('access_token');
                 const error = params.get('error');
                 const errorDescription = params.get('error_description');
 
                 if (error) {
-                    showError(`Erreur d'authentification: ${error} - ${errorDescription}`);
+                    updateUI(`Erreur d'authentification: ${error}${errorDescription ? ` - ${errorDescription}` : ''}`, 'error');
                     return;
                 }
 
                 if (!accessToken) {
-                    showError('Aucun token d\'accès reçu');
+                    updateUI('Aucun token d\'accès reçu', 'error');
                     return;
                 }
 
                 // Redirige vers l'extension avec le token
-                const extensionUrl = `moz-extension://${extensionId}/src/auth/auth.html#access_token=${accessToken}`;
-                showSuccess('Authentification réussie ! Redirection...');
+                updateUI('Authentification réussie ! Redirection...', 'success');
                 
-                // Redirige vers l'extension après un court délai
                 setTimeout(() => {
-                    window.location.href = extensionUrl;
+                    window.location.href = `moz-extension://${extensionId}/src/auth/auth.html#access_token=${accessToken}`;
                 }, 1000);
 
             } catch (error) {
-                showError('Une erreur est survenue lors de l\'authentification');
                 console.error('Erreur:', error);
+                updateUI('Une erreur est survenue lors de l\'authentification', 'error');
             }
         }
 
-        // Lance l'authentification au chargement de la page
         document.addEventListener('DOMContentLoaded', handleAuth);
     </script>
 </body>

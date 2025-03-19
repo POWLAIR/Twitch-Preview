@@ -11,8 +11,7 @@
   "permissions": [
     "storage",
     "https://api.twitch.tv/*",
-    "https://id.twitch.tv/*",
-    "https://w4x5xlzdrz5x3u9xf9rm16r6xgmxzq.chromiumapp.org/"
+    "https://id.twitch.tv/*"
   ],
   "browser_action": {
     "default_popup": "src/popup/index.html",
@@ -20,7 +19,8 @@
       "16": "src/assets/icons/icon-16.png",
       "48": "src/assets/icons/icon-48.png",
       "128": "src/assets/icons/icon-128.png"
-    }
+    },
+    "default_title": "Twitch Preview"
   },
   "options_ui": {
     "page": "src/options/options.html",

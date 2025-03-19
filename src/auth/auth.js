@@ -12,8 +12,7 @@ async function handleAuth() {
         const errorDescription = params.get('error_description');
 
         if (error) {
-            // Affiche l'erreur si présente
-            showError(`Erreur d'authentification: ${error} - ${errorDescription}`);
+            showError(`Erreur d'authentification: ${error}${errorDescription ? ` - ${errorDescription}` : ''}`);
             return;
         }
 
@@ -30,16 +29,13 @@ async function handleAuth() {
 
         if (response.success) {
             messageElement.textContent = 'Authentification réussie !';
-            // Ferme la fenêtre après un court délai
-            setTimeout(() => {
-                window.close();
-            }, 1500);
+            setTimeout(() => window.close(), 1500);
         } else {
-            showError(response.error || "Erreur lors de l'enregistrement du token");
+            throw new Error(response.error || "Erreur lors de l'enregistrement du token");
         }
     } catch (error) {
-        showError(error.message);
         console.error('Erreur:', error);
+        showError(error.message);
     }
 }
 
