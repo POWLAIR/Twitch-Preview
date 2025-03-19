@@ -6,6 +6,15 @@ export class TwitchAuth {
         this.loadTokenFromStorage();
     }
 
+    // Configuration de la fenêtre popup
+    static POPUP_CONFIG = {
+        width: 800,
+        height: 600,
+        type: 'popup',
+        left: window.screen.width / 2 - 400, // Centre la fenêtre horizontalement
+        top: window.screen.height / 2 - 300  // Centre la fenêtre verticalement
+    };
+
     // Charge le token depuis le stockage local
     async loadTokenFromStorage() {
         const data = await browser.storage.local.get('twitchToken');
@@ -31,11 +40,22 @@ export class TwitchAuth {
 
     // Initialise le processus d'authentification
     async initiateAuth() {
-        // Obtient l'URL d'authentification depuis la configuration avec l'ID de l'extension
-        const authUrl = TWITCH_API.getAuthURL(browser.runtime.id);
+        // Obtient l'UUID de l'extension depuis browser.runtime.getURL
+        const extensionUrl = browser.runtime.getURL('');
+        const extensionId = extensionUrl.split('/')[2]; // Extrait l'UUID de l'URL
         
-        // Ouvre la fenêtre d'authentification Twitch
-        await browser.tabs.create({ url: authUrl });
+        // Obtient l'URL d'authentification depuis la configuration avec l'UUID
+        const authUrl = TWITCH_API.getAuthURL(extensionId);
+        
+        // Ouvre la fenêtre d'authentification Twitch dans une popup
+        await browser.windows.create({
+            url: authUrl,
+            type: 'popup',
+            width: TwitchAuth.POPUP_CONFIG.width,
+            height: TwitchAuth.POPUP_CONFIG.height,
+            left: TwitchAuth.POPUP_CONFIG.left,
+            top: TwitchAuth.POPUP_CONFIG.top
+        });
     }
 
     // Échange le code d'autorisation contre un token d'accès

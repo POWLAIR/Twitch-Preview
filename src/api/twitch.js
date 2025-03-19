@@ -32,15 +32,40 @@ export async function getCurrentUser(token) {
 }
 
 // Récupère la liste des chaînes suivies
-export async function getFollowedChannels(userId, token) {
-    const data = await twitchApiRequest(`/users/follows?from_id=${userId}`, 'GET', token);
-    return data?.data || [];
+export async function getFollowedChannels(token, first = 100) {
+    const data = await twitchApiRequest(`/channels/followed?first=${first}`, 'GET', token);
+    return {
+        total: data?.total || data?.data?.length || 0,
+        channels: data?.data?.map(channel => ({
+            broadcaster_id: channel.broadcaster_id,
+            broadcaster_login: channel.broadcaster_login,
+            broadcaster_name: channel.broadcaster_name,
+            game_id: channel.game_id,
+            game_name: channel.game_name,
+            title: channel.title,
+            tags: channel.tags || []
+        })) || []
+    };
 }
 
-// Récupère la liste des streams en direct
-export async function getLiveStreams(userIds, token) {
-    if (!userIds || userIds.length === 0) return [];
-    
-    const queryString = userIds.map(id => `user_id=${id}`).join('&');
-    return await twitchApiRequest(`/streams?${queryString}`, 'GET', token);
+// Récupère la liste des streams en direct des chaînes suivies
+export async function getFollowedStreams(token, first = 100) {
+    const data = await twitchApiRequest(`/streams/followed?first=${first}`, 'GET', token);
+    return {
+        streams: data?.data?.map(stream => ({
+            id: stream.id,
+            user_id: stream.user_id,
+            user_login: stream.user_login,
+            user_name: stream.user_name,
+            game_id: stream.game_id,
+            game_name: stream.game_name,
+            title: stream.title,
+            viewer_count: stream.viewer_count,
+            started_at: stream.started_at,
+            language: stream.language,
+            thumbnail_url: stream.thumbnail_url?.replace('{width}x{height}', '440x248'),
+            tags: stream.tags || [],
+            is_mature: stream.is_mature
+        })) || []
+    };
 } 

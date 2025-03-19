@@ -70,10 +70,32 @@
         const messageElement = document.getElementById('message');
         const spinnerElement = document.getElementById('spinner');
 
+        // Configuration de la fenêtre popup
+        const POPUP_CONFIG = {
+            width: 600,
+            height: 400,
+            left: window.screen.width / 2 - 300,
+            top: window.screen.height / 2 - 200
+        };
+
         function updateUI(message, type = 'info') {
             spinnerElement.classList.toggle('hidden', type !== 'info');
             messageElement.textContent = message;
             messageElement.className = `message ${type}`;
+        }
+
+        function openPopup(url) {
+            const features = [
+                `width=${POPUP_CONFIG.width}`,
+                `height=${POPUP_CONFIG.height}`,
+                `left=${POPUP_CONFIG.left}`,
+                `top=${POPUP_CONFIG.top}`,
+                'resizable=yes',
+                'scrollbars=yes',
+                'status=yes'
+            ].join(',');
+
+            return window.open(url, 'twitch_preview_auth', features);
         }
 
         async function handleAuth() {
@@ -100,7 +122,7 @@
                     return;
                 }
 
-                // Décode le state pour obtenir l'ID de l'extension et le CSRF
+                // Décode le state pour obtenir l'UUID de l'extension et le CSRF
                 let stateObj;
                 try {
                     stateObj = JSON.parse(atob(state));
@@ -110,25 +132,29 @@
                 }
 
                 if (!stateObj.extensionId) {
-                    updateUI('ID de l\'extension manquant dans le state', 'error');
+                    updateUI('UUID de l\'extension manquant dans le state', 'error');
                     return;
                 }
 
-                // Redirige vers l'extension avec le token
+                // Redirige vers l'extension avec le token en utilisant l'UUID
                 updateUI('Authentification réussie ! Redirection...', 'success');
 
-                // Crée un nouvel onglet avec l'URL de l'extension
+                // Crée l'URL de l'extension
                 const extensionUrl = `moz-extension://${stateObj.extensionId}/src/auth/auth.html#access_token=${accessToken}`;
                 
-                // Ouvre l'URL dans un nouvel onglet
-                const newTab = window.open(extensionUrl, '_blank');
+                // Affiche l'URL pour le débogage
+                console.log('URL de redirection:', extensionUrl);
                 
-                if (!newTab) {
+                // Ouvre l'URL dans une popup
+                const popup = openPopup(extensionUrl);
+                
+                if (!popup) {
                     updateUI('Erreur : impossible d\'ouvrir l\'extension. Veuillez autoriser les popups.', 'error');
+                    updateUI(`URL: ${extensionUrl}`, 'error');
                     return;
                 }
 
-                // Ferme cet onglet après un court délai
+                // Ferme cette fenêtre après un court délai
                 setTimeout(() => {
                     window.close();
                 }, 2000);
