@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "Twitch Preview",
+  "version": "1.0.0",
+  "description": "Voir en temps réel les chaînes Twitch que vous suivez et qui sont en live",
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+  "permissions": [
+    "storage",
+    "https://id.twitch.tv/*",
+    "https://api.twitch.tv/*"
+  ],
+  "browser_action": {
+    "default_popup": "popup/index.html",
+    "default_icon": {
+      "48": "icons/icon-48.png",
+      "96": "icons/icon-96.png"
+    }
+  },
+  "background": {
+    "scripts": ["src/background.js"],
+    "persistent": false
+  }
+} 
