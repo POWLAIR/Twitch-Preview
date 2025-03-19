@@ -24,17 +24,22 @@ export const TWITCH_API = {
         'user:read:email'       // Pour obtenir les informations de l'utilisateur
     ],
 
-    // Génère l'URL d'authentification complète
+    // Génère l'URL d'authentification complète pour le flux Implicit
     getAuthURL() {
+        // Génère un état unique pour la sécurité CSRF
+        const state = crypto.randomUUID();
+        
+        // Construit les paramètres de l'URL selon la spécification Twitch pour le flux Implicit
         const params = new URLSearchParams({
+            response_type: 'token', // Important: 'token' pour le flux Implicit
             client_id: this.CLIENT_ID,
-            redirect_uri: `${this.REDIRECT_URI}?extension_id=${browser.runtime.id}`,
-            response_type: 'token',
+            redirect_uri: this.REDIRECT_URI,
             scope: this.SCOPES.join(' '),
-            force_verify: 'false',
-            state: crypto.randomUUID()
+            state: state,
+            force_verify: 'false'
         });
         
+        // L'ID de l'extension sera géré par la page de redirection
         return `${this.AUTH_URL}?${params.toString()}`;
     }
 };

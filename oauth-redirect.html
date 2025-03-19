@@ -78,12 +78,11 @@
 
         async function handleAuth() {
             try {
-                // Récupère l'ID de l'extension depuis l'URL
-                const urlParams = new URLSearchParams(window.location.search);
-                const extensionId = urlParams.get('extension_id');
+                // Récupère l'ID de l'extension depuis le localStorage
+                const extensionId = localStorage.getItem('twitch_preview_extension_id');
 
                 if (!extensionId) {
-                    updateUI('ID de l\'extension manquant dans l\'URL', 'error');
+                    updateUI('ID de l\'extension non trouvé. Veuillez réessayer.', 'error');
                     return;
                 }
 
@@ -92,6 +91,7 @@
                 const accessToken = params.get('access_token');
                 const error = params.get('error');
                 const errorDescription = params.get('error_description');
+                const state = params.get('state');
 
                 if (error) {
                     updateUI(`Erreur d'authentification: ${error}${errorDescription ? ` - ${errorDescription}` : ''}`, 'error');
@@ -102,6 +102,17 @@
                     updateUI('Aucun token d\'accès reçu', 'error');
                     return;
                 }
+
+                // Vérifie l'état pour la sécurité CSRF
+                const savedState = localStorage.getItem('twitch_preview_oauth_state');
+                if (state !== savedState) {
+                    updateUI('Erreur de sécurité : état invalide', 'error');
+                    return;
+                }
+
+                // Nettoie le localStorage
+                localStorage.removeItem('twitch_preview_oauth_state');
+                localStorage.removeItem('twitch_preview_extension_id');
 
                 // Redirige vers l'extension avec le token
                 updateUI('Authentification réussie ! Redirection...', 'success');
