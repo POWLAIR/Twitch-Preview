@@ -91,14 +91,46 @@ async function refreshStreams(forceRefresh = false) {
     hideError();
 
     try {
-        const response = await browser.runtime.sendMessage({ type: 'GET_FOLLOWED_STREAMS' });
-        if (response.success) {
-            cachedStreams = response.streams;
-            lastRefreshTime = Date.now();
-            displayStreams(response.streams);
-        } else {
-            throw new Error(response.error || 'Impossible de charger les streams');
+        // D'abord, récupérer les chaînes suivies
+        const channelsResponse = await browser.runtime.sendMessage({ 
+            type: 'GET_FOLLOWED_CHANNELS',
+            first: 100
+        });
+
+        if (!channelsResponse.success) {
+            throw new Error(channelsResponse.error || 'Impossible de charger les chaînes suivies');
         }
+
+        // Ensuite, récupérer les streams en direct
+        const streamsResponse = await browser.runtime.sendMessage({ 
+            type: 'GET_FOLLOWED_STREAMS',
+            first: 100
+        });
+
+        if (!streamsResponse.success) {
+            throw new Error(streamsResponse.error || 'Impossible de charger les streams');
+        }
+
+        // Fusionner les informations des chaînes et des streams
+        const streams = streamsResponse.streams.map(stream => {
+            const channel = channelsResponse.channels.find(
+                c => c.broadcaster_id === stream.user_id
+            );
+            return {
+                ...stream,
+                followed_at: channel?.followed_at
+            };
+        });
+
+        // Trier par date de suivi (les plus récents en premier)
+        streams.sort((a, b) => {
+            if (!a.followed_at || !b.followed_at) return 0;
+            return new Date(b.followed_at) - new Date(a.followed_at);
+        });
+
+        cachedStreams = streams;
+        lastRefreshTime = Date.now();
+        displayStreams(streams);
     } catch (error) {
         showError(error.message);
     } finally {
@@ -130,15 +162,40 @@ function createStreamElement(stream) {
     const template = elements.streamItemTemplate.content.cloneNode(true);
     const streamItem = template.querySelector('.stream-item');
 
-    const avatar = streamItem.querySelector('.streamer-avatar');
-    avatar.src = stream.user_profile_image;
-    avatar.alt = `${stream.user_name} avatar`;
+    // Mise à jour de la miniature avec la bonne taille
+    const thumbnail = streamItem.querySelector('.stream-thumbnail');
+    if (thumbnail) {
+        thumbnail.src = stream.thumbnail_url;
+        thumbnail.alt = `${stream.title} thumbnail`;
+    }
 
-    streamItem.querySelector('.streamer-name').textContent = stream.user_name;
-    streamItem.querySelector('.game-name').textContent = stream.game_name;
-    streamItem.querySelector('.viewer-count .count').textContent = formatViewerCount(stream.viewer_count);
-    streamItem.querySelector('.stream-duration .duration').textContent = formatStreamDuration(stream.started_at);
+    // Informations du streamer
+    const streamerInfo = streamItem.querySelector('.streamer-info');
+    if (streamerInfo) {
+        streamerInfo.querySelector('.streamer-name').textContent = stream.user_name;
+        streamerInfo.querySelector('.stream-title').textContent = stream.title;
+        streamerInfo.querySelector('.game-name').textContent = stream.game_name || 'Pas de jeu';
+    }
 
+    // Statistiques du stream
+    const streamStats = streamItem.querySelector('.stream-stats');
+    if (streamStats) {
+        streamStats.querySelector('.viewer-count').textContent = formatViewerCount(stream.viewer_count);
+        streamStats.querySelector('.stream-duration').textContent = formatStreamDuration(stream.started_at);
+    }
+
+    // Tags du stream
+    const tagsContainer = streamItem.querySelector('.stream-tags');
+    if (tagsContainer && stream.tags && stream.tags.length > 0) {
+        stream.tags.slice(0, 3).forEach(tag => {
+            const tagElement = document.createElement('span');
+            tagElement.className = 'tag';
+            tagElement.textContent = tag;
+            tagsContainer.appendChild(tagElement);
+        });
+    }
+
+    // Ajout du lien vers le stream
     streamItem.addEventListener('click', () => {
         window.open(`https://twitch.tv/${stream.user_login}`, '_blank');
     });
@@ -152,6 +209,7 @@ function updateUserInfo(userData) {
     elements.userName.textContent = userData.display_name;
     elements.userInfo.classList.remove('hidden');
     elements.loginPrompt.classList.add('hidden');
+    elements.refreshButton.classList.remove('hidden');
 }
 
 function showLoginPrompt() {
