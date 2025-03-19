@@ -50,4 +50,33 @@ function showError(message) {
 }
 
 // Lance le processus d'authentification au chargement de la page
-document.addEventListener('DOMContentLoaded', handleAuth); 
+document.addEventListener('DOMContentLoaded', handleAuth);
+
+// Écoute les messages de la page de redirection OAuth
+window.addEventListener('message', async (event) => {
+    // Vérifie que le message vient de la page de redirection Vercel
+    if (!event.origin.startsWith('https://votre-domaine-vercel.vercel.app')) {
+        console.error('Origine non autorisée:', event.origin);
+        return;
+    }
+
+    // Vérifie le type de message
+    if (event.data.type === 'TWITCH_AUTH_SUCCESS') {
+        try {
+            // Envoie le token au background script
+            const response = await browser.runtime.sendMessage({
+                type: 'SAVE_TOKEN',
+                token: event.data.token
+            });
+
+            if (response.success) {
+                // Ferme la fenêtre d'authentification
+                window.close();
+            } else {
+                throw new Error(response.error || "Erreur lors de l'enregistrement du token");
+            }
+        } catch (error) {
+            console.error('Erreur lors du traitement du token:', error);
+        }
+    }
+}); 

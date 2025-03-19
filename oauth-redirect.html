@@ -22,6 +22,8 @@
             background-color: #18181B;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            width: 400px;
         }
 
         .spinner {
@@ -32,6 +34,7 @@
             border-radius: 50%;
             margin: 0 auto 1rem;
             animation: spin 1s linear infinite;
+            display: none;
         }
 
         @keyframes spin {
@@ -45,28 +48,70 @@
             padding: 1rem;
             background-color: rgba(255, 71, 71, 0.1);
             border-radius: 4px;
+            display: none;
+        }
+
+        .success {
+            color: #00FF00;
+            margin-top: 1rem;
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="spinner"></div>
-        <p id="message">Redirection en cours...</p>
-        <p id="error" class="error" style="display: none;"></p>
+        <div class="spinner" id="spinner"></div>
+        <p id="message">Vérification de la redirection...</p>
+        <p id="error" class="error"></p>
+        <p id="success" class="success"></p>
     </div>
     <script>
         const messageElement = document.getElementById('message');
         const errorElement = document.getElementById('error');
+        const successElement = document.getElementById('success');
+        const spinnerElement = document.getElementById('spinner');
 
         function showError(message) {
+            spinnerElement.style.display = 'none';
             messageElement.style.display = 'none';
             errorElement.textContent = message;
             errorElement.style.display = 'block';
         }
 
-        // Fonction principale de redirection
-        function handleRedirect() {
+        function showSuccess(message) {
+            spinnerElement.style.display = 'none';
+            messageElement.style.display = 'none';
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+        }
+
+        function validateOrigin() {
+            // Vérifie si la page a été ouverte par l'extension
+            const opener = window.opener;
+            if (!opener) {
+                showError('Accès non autorisé : cette page doit être ouverte depuis l\'extension Twitch Preview');
+                return false;
+            }
+
+            // Vérifie l'origine de l'extension (moz-extension://)
+            const openerOrigin = opener.origin;
+            if (!openerOrigin.startsWith('moz-extension://')) {
+                showError('Origine non autorisée');
+                return false;
+            }
+
+            return true;
+        }
+
+        async function handleRedirect() {
             try {
+                spinnerElement.style.display = 'block';
+
+                // Vérifie l'origine
+                if (!validateOrigin()) {
+                    return;
+                }
+
                 // Récupère les paramètres de l'URL
                 const params = new URLSearchParams(window.location.hash.substring(1));
                 const accessToken = params.get('access_token');
@@ -83,11 +128,15 @@
                     return;
                 }
 
-                // Construit l'URL de redirection vers l'extension
-                const extensionUrl = `moz-extension://__EXTENSION_ID__/src/auth/auth.html#access_token=${accessToken}`;
+                // Envoie le token à l'extension
+                showSuccess('Authentification réussie !');
+                window.opener.postMessage({ type: 'TWITCH_AUTH_SUCCESS', token: accessToken }, '*');
                 
-                // Redirige vers l'extension
-                window.location.href = extensionUrl;
+                // Ferme la fenêtre après un court délai
+                setTimeout(() => {
+                    window.close();
+                }, 2000);
+
             } catch (error) {
                 showError('Une erreur est survenue lors de la redirection');
                 console.error('Erreur:', error);
