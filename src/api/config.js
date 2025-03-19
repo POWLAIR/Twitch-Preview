@@ -15,7 +15,8 @@ export const TWITCH_API = {
     VALIDATE_URL: 'https://id.twitch.tv/oauth2/validate',
     API_URL: 'https://api.twitch.tv/helix',
     
-    // L'URL de redirection hébergée (à remplacer par votre URL réelle)
+    // L'URL de redirection hébergée sur GitHub Pages
+    // Remplacez par https://[votre-nom-utilisateur].github.io/[nom-du-repo]/oauth-redirect.html
     REDIRECT_URI: 'https://votre-nom.github.io/twitch-preview/oauth-redirect.html',
     
     // Les scopes nécessaires pour l'application
