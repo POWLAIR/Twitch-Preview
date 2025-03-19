@@ -10,8 +10,10 @@
   },
   "permissions": [
     "storage",
+    "tabs",
     "https://api.twitch.tv/*",
-    "https://id.twitch.tv/*"
+    "https://id.twitch.tv/*",
+    "https://twitch-preview.vercel.app/*"
   ],
   "browser_action": {
     "default_popup": "src/popup/index.html",
@@ -34,5 +36,6 @@
   "web_accessible_resources": [
     "src/auth/auth.html",
     "src/options/options.html"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 } 

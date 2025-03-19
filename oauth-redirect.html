@@ -116,10 +116,22 @@
 
                 // Redirige vers l'extension avec le token
                 updateUI('Authentification réussie ! Redirection...', 'success');
+
+                // Crée un nouvel onglet avec l'URL de l'extension
+                const extensionUrl = `moz-extension://${stateObj.extensionId}/src/auth/auth.html#access_token=${accessToken}`;
                 
+                // Ouvre l'URL dans un nouvel onglet
+                const newTab = window.open(extensionUrl, '_blank');
+                
+                if (!newTab) {
+                    updateUI('Erreur : impossible d\'ouvrir l\'extension. Veuillez autoriser les popups.', 'error');
+                    return;
+                }
+
+                // Ferme cet onglet après un court délai
                 setTimeout(() => {
-                    window.location.href = `moz-extension://${stateObj.extensionId}/src/auth/auth.html#access_token=${accessToken}`;
-                }, 1000);
+                    window.close();
+                }, 2000);
 
             } catch (error) {
                 console.error('Erreur:', error);
