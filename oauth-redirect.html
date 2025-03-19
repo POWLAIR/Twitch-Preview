@@ -78,15 +78,7 @@
 
         async function handleAuth() {
             try {
-                // Récupère l'ID de l'extension depuis le localStorage
-                const extensionId = localStorage.getItem('twitch_preview_extension_id');
-
-                if (!extensionId) {
-                    updateUI('ID de l\'extension non trouvé. Veuillez réessayer.', 'error');
-                    return;
-                }
-
-                // Récupère le token depuis le hash de l'URL
+                // Récupère les paramètres depuis le hash de l'URL
                 const params = new URLSearchParams(window.location.hash.substring(1));
                 const accessToken = params.get('access_token');
                 const error = params.get('error');
@@ -103,22 +95,30 @@
                     return;
                 }
 
-                // Vérifie l'état pour la sécurité CSRF
-                const savedState = localStorage.getItem('twitch_preview_oauth_state');
-                if (state !== savedState) {
-                    updateUI('Erreur de sécurité : état invalide', 'error');
+                if (!state) {
+                    updateUI('Paramètre state manquant', 'error');
                     return;
                 }
 
-                // Nettoie le localStorage
-                localStorage.removeItem('twitch_preview_oauth_state');
-                localStorage.removeItem('twitch_preview_extension_id');
+                // Décode le state pour obtenir l'ID de l'extension et le CSRF
+                let stateObj;
+                try {
+                    stateObj = JSON.parse(atob(state));
+                } catch (e) {
+                    updateUI('Format du state invalide', 'error');
+                    return;
+                }
+
+                if (!stateObj.extensionId) {
+                    updateUI('ID de l\'extension manquant dans le state', 'error');
+                    return;
+                }
 
                 // Redirige vers l'extension avec le token
                 updateUI('Authentification réussie ! Redirection...', 'success');
                 
                 setTimeout(() => {
-                    window.location.href = `moz-extension://${extensionId}/src/auth/auth.html#access_token=${accessToken}`;
+                    window.location.href = `moz-extension://${stateObj.extensionId}/src/auth/auth.html#access_token=${accessToken}`;
                 }, 1000);
 
             } catch (error) {

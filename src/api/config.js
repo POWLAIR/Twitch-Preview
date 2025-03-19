@@ -25,13 +25,21 @@ export const TWITCH_API = {
     ],
 
     // Génère l'URL d'authentification complète pour le flux Implicit
-    getAuthURL() {
-        // Génère un état unique pour la sécurité CSRF
-        const state = crypto.randomUUID();
+    getAuthURL(extensionId) {
+        if (!extensionId) {
+            throw new Error('L\'ID de l\'extension est requis');
+        }
+
+        // Génère un état unique pour la sécurité CSRF et inclut l'extension_id
+        const stateObj = {
+            csrf: crypto.randomUUID(),
+            extensionId: extensionId
+        };
+        const state = btoa(JSON.stringify(stateObj));
         
         // Construit les paramètres de l'URL selon la spécification Twitch pour le flux Implicit
         const params = new URLSearchParams({
-            response_type: 'token', // Important: 'token' pour le flux Implicit
+            response_type: 'token',
             client_id: this.CLIENT_ID,
             redirect_uri: this.REDIRECT_URI,
             scope: this.SCOPES.join(' '),
@@ -39,7 +47,6 @@ export const TWITCH_API = {
             force_verify: 'false'
         });
         
-        // L'ID de l'extension sera géré par la page de redirection
         return `${this.AUTH_URL}?${params.toString()}`;
     }
 };

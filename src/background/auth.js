@@ -31,13 +31,8 @@ export class TwitchAuth {
 
     // Initialise le processus d'authentification
     async initiateAuth() {
-        // Sauvegarde l'ID de l'extension et l'état dans le localStorage
-        const state = crypto.randomUUID();
-        localStorage.setItem('twitch_preview_extension_id', browser.runtime.id);
-        localStorage.setItem('twitch_preview_oauth_state', state);
-        
-        // Obtient l'URL d'authentification depuis la configuration
-        const authUrl = TWITCH_API.getAuthURL();
+        // Obtient l'URL d'authentification depuis la configuration avec l'ID de l'extension
+        const authUrl = TWITCH_API.getAuthURL(browser.runtime.id);
         
         // Ouvre la fenêtre d'authentification Twitch
         await browser.tabs.create({ url: authUrl });
