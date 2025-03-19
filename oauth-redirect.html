@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Preview - Redirection OAuth</title>
+    <style>
+        body {
+            background-color: #0E0E10;
+            color: #EFEFF1;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .container {
+            padding: 2rem;
+            background-color: #18181B;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #9146FF;
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #FF4747;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(255, 71, 71, 0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <p id="message">Redirection en cours...</p>
+        <p id="error" class="error" style="display: none;"></p>
+    </div>
+    <script>
+        const messageElement = document.getElementById('message');
+        const errorElement = document.getElementById('error');
+
+        function showError(message) {
+            messageElement.style.display = 'none';
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Fonction principale de redirection
+        function handleRedirect() {
+            try {
+                // Récupère les paramètres de l'URL
+                const params = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = params.get('access_token');
+                const error = params.get('error');
+                const errorDescription = params.get('error_description');
+
+                if (error) {
+                    showError(`Erreur d'authentification: ${error} - ${errorDescription}`);
+                    return;
+                }
+
+                if (!accessToken) {
+                    showError('Aucun token d\'accès reçu');
+                    return;
+                }
+
+                // Construit l'URL de redirection vers l'extension
+                const extensionUrl = `moz-extension://__EXTENSION_ID__/src/auth/auth.html#access_token=${accessToken}`;
+                
+                // Redirige vers l'extension
+                window.location.href = extensionUrl;
+            } catch (error) {
+                showError('Une erreur est survenue lors de la redirection');
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Lance la redirection au chargement de la page
+        document.addEventListener('DOMContentLoaded', handleRedirect);
+    </script>
+</body>
+</html> 

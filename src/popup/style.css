@@ -1,0 +1,256 @@
+:root {
+    --twitch-purple: #9146FF;
+    --twitch-purple-dark: #772CE8;
+    --background: #0E0E10;
+    --background-light: #18181B;
+    --text-color: #EFEFF1;
+    --text-color-secondary: #ADADB8;
+    --border-color: #2D2D2D;
+    --success-color: #00FF7F;
+    --error-color: #FF4747;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 350px;
+    max-height: 600px;
+    background-color: var(--background);
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.container {
+    padding: 16px;
+}
+
+/* Header styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--background-light);
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--twitch-purple);
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Button styles */
+.button {
+    background: var(--twitch-purple);
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.button:hover {
+    background: var(--twitch-purple-dark);
+    transform: translateY(-1px);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+
+.button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.button.secondary {
+    background: var(--background-light);
+    border: 1px solid var(--border-color);
+}
+
+.button.secondary:hover {
+    background: var(--border-color);
+}
+
+/* Stream list styles */
+.stream-item {
+    display: flex;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background-color: var(--background-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    animation: slideIn 0.3s ease;
+}
+
+.stream-item:hover {
+    background-color: var(--border-color);
+    transform: translateX(4px);
+}
+
+.streamer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 12px;
+    border: 2px solid var(--twitch-purple);
+}
+
+.stream-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.streamer-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.game-name {
+    font-size: 12px;
+    color: var(--text-color-secondary);
+    margin-bottom: 4px;
+}
+
+.stream-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.viewer-count, .stream-duration {
+    font-size: 12px;
+    color: var(--text-color-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Loading spinner */
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    color: var(--text-color-secondary);
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--twitch-purple);
+    border-top: 3px solid transparent;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    animation: spin 1s linear infinite;
+}
+
+/* Login prompt */
+.login-prompt {
+    text-align: center;
+    padding: 32px 16px;
+}
+
+.login-prompt h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.login-prompt p {
+    color: var(--text-color-secondary);
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Error message */
+.error-message {
+    background-color: rgba(255, 71, 71, 0.1);
+    border-left: 4px solid var(--error-color);
+    padding: 12px;
+    margin: 16px 0;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--error-color);
+}
+
+.hidden {
+    display: none;
+}
+
+/* Animations */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--twitch-purple);
+} 
