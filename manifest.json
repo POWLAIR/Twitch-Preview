@@ -42,4 +42,4 @@
     "src/options/options.html"
   ],
   "content_security_policy": "script-src 'self' https://embed.twitch.tv; object-src 'self'; frame-src https://player.twitch.tv https://*.twitch.tv https://embed.twitch.tv"
-} 
+}
