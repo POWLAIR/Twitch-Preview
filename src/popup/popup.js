@@ -149,6 +149,9 @@ async function refreshStreams(forceRefresh = false) {
 function displayStreams(streams) {
     elements.streamList.innerHTML = '';
     
+    // Mettre à jour le badge avec le nombre de streams
+    updateBadgeCount(streams?.length || 0);
+    
     if (!streams || streams.length === 0) {
         const emptyMessage = document.createElement('div');
         emptyMessage.className = 'empty-message';
@@ -271,6 +274,20 @@ function hideError() {
     elements.errorMessage.classList.add('hidden');
 }
 
+// Modifier la fonction updateBadgeCount
+async function updateBadgeCount(count) {
+    try {
+        if (count > 0) {
+            await browser.browserAction.setBadgeText({ text: count.toString() });
+            await browser.browserAction.setBadgeBackgroundColor({ color: '#9146FF' }); // Couleur Twitch
+        } else {
+            await browser.browserAction.setBadgeText({ text: '' }); // Enlève le badge si pas de streams
+        }
+    } catch (error) {
+        console.error('Error updating badge:', error);
+    }
+}
+
 // Ajouter cette fonction pour gérer la déconnexion
 async function handleLogout() {
     showLoading();
@@ -281,6 +298,9 @@ async function handleLogout() {
             cachedStreams = null;
             cachedUserData = null;
             lastRefreshTime = 0;
+            
+            // Réinitialiser le badge
+            await updateBadgeCount(0);
             
             // Recharger la popup pour revenir à l'état initial
             window.location.reload();
