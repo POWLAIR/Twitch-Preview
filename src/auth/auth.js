@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', handleAuth);
 // Écoute les messages de la page de redirection OAuth
 window.addEventListener('message', async (event) => {
     // Vérifie que le message vient de la page de redirection Vercel
-    if (!event.origin.startsWith('https://votre-domaine-vercel.vercel.app')) {
+    if (!event.origin.startsWith('https://twitch-preview.vercel.app')) {
         console.error('Origine non autorisée:', event.origin);
         return;
     }

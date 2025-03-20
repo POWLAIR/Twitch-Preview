@@ -48,8 +48,19 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
                 return { success: true, ...streams };
 
             case 'LOGOUT':
-                await auth.logout();
-                return { success: true };
+                try {
+                    // Supprimer le token d'accès et les données utilisateur
+                    await browser.storage.local.remove(['accessToken', 'userData', 'refreshToken']);
+                    // Nettoyer les autres données en cache si nécessaire
+                    await browser.storage.local.remove(['followedChannels', 'streams']);
+                    // Réinitialiser le token dans l'instance auth
+                    auth.token = null;
+                    
+                    return { success: true };
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    return { success: false, error: error.message };
+                }
 
             default:
                 throw new Error('Type de message non reconnu');

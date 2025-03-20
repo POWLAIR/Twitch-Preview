@@ -59,12 +59,53 @@
         .hidden {
             display: none;
         }
+
+        .error-help {
+            margin-top: 1rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .error-help ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .error-help li {
+            margin-bottom: 0.5rem;
+        }
+
+        .retry-button {
+            background-color: #9146FF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .retry-button:hover {
+            background-color: #7f2cff;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="spinner" class="spinner"></div>
         <p id="message" class="message">Traitement de l'authentification...</p>
+        <div id="error-container" class="error hidden">
+            <p id="error-message"></p>
+            <div id="popup-help" class="error-help hidden">
+                <p>Pour résoudre ce problème :</p>
+                <ol>
+                    <li>Cliquez sur l'icône de blocage de pop-up dans la barre d'adresse</li>
+                    <li>Sélectionnez "Toujours autoriser les pop-ups de Twitch Preview"</li>
+                    <li>Cliquez sur le bouton ci-dessous pour réessayer</li>
+                </ol>
+                <button id="retryButton" class="retry-button">Réessayer</button>
+            </div>
+        </div>
     </div>
     <script>
         const messageElement = document.getElementById('message');
@@ -96,6 +137,17 @@
             ].join(',');
 
             return window.open(url, 'twitch_preview_auth', features);
+        }
+
+        function showPopupError() {
+            spinnerElement.classList.add('hidden');
+            const errorContainer = document.getElementById('error-container');
+            const errorMessage = document.getElementById('error-message');
+            const popupHelp = document.getElementById('popup-help');
+            
+            errorContainer.classList.remove('hidden');
+            errorMessage.textContent = 'Erreur : impossible d\'ouvrir l\'extension. Veuillez autoriser les popups.';
+            popupHelp.classList.remove('hidden');
         }
 
         async function handleAuth() {
@@ -149,8 +201,7 @@
                 const popup = openPopup(extensionUrl);
                 
                 if (!popup) {
-                    updateUI('Erreur : impossible d\'ouvrir l\'extension. Veuillez autoriser les popups.', 'error');
-                    updateUI(`URL: ${extensionUrl}`, 'error');
+                    showPopupError();
                     return;
                 }
 
@@ -164,6 +215,18 @@
                 updateUI('Une erreur est survenue lors de l\'authentification', 'error');
             }
         }
+
+        // Ajouter la gestion du bouton de réessai
+        document.getElementById('retryButton').addEventListener('click', () => {
+            // Réinitialiser l'UI
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.classList.add('hidden');
+            spinnerElement.classList.remove('hidden');
+            messageElement.textContent = 'Traitement de l\'authentification...';
+            
+            // Relancer l'authentification
+            handleAuth();
+        });
 
         document.addEventListener('DOMContentLoaded', handleAuth);
     </script>

@@ -17,15 +17,34 @@
 }
 
 body {
-    width: 350px;
+    width: 400px;
     max-height: 600px;
     background-color: var(--background);
     color: var(--text-color);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+    scrollbar-width: none; /* Pour Firefox */
+    -ms-overflow-style: none; /* Pour Internet Explorer et Edge */
+}
+
+/* Cacher la scrollbar pour Chrome, Safari et Opera */
+body::-webkit-scrollbar {
+    display: none;
 }
 
 .container {
-    padding: 16px;
+    padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    max-height: 600px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* Cacher la scrollbar pour Chrome, Safari et Opera */
+.container::-webkit-scrollbar {
+    display: none;
 }
 
 /* Header styles */
@@ -51,6 +70,7 @@ h1 {
     padding: 8px;
     border-radius: 8px;
     margin-bottom: 16px;
+    justify-content: space-between;
 }
 
 .user-avatar {
@@ -70,15 +90,20 @@ h1 {
     background: var(--twitch-purple);
     border: none;
     border-radius: 4px;
-    padding: 8px 12px;
+    padding: 10px 16px;
     cursor: pointer;
     color: white;
     font-size: 14px;
     font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     transition: all 0.2s ease;
+}
+
+.button svg {
+    width: 20px;
+    height: 20px;
 }
 
 .button:hover {
@@ -86,34 +111,29 @@ h1 {
     transform: translateY(-1px);
 }
 
-.button:active {
-    transform: translateY(0);
-}
-
-.button svg {
-    width: 16px;
-    height: 16px;
-}
-
 .button.secondary {
-    background: var(--background-light);
+    background-color: #3A3A3D;
     border: 1px solid var(--border-color);
 }
 
 .button.secondary:hover {
-    background: var(--border-color);
+    background-color: #4A4A4D;
 }
 
 /* Stream list styles */
 .stream-item {
     display: flex;
-    padding: 12px;
+    padding: 10px;
     border-radius: 8px;
     margin-bottom: 8px;
     background-color: var(--background-light);
     cursor: pointer;
     transition: all 0.2s ease;
     animation: slideIn 0.3s ease;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .stream-item:hover {
@@ -122,44 +142,87 @@ h1 {
 }
 
 .streamer-avatar {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    margin-right: 12px;
+    margin-right: 10px;
     border: 2px solid var(--twitch-purple);
+    object-fit: cover;
+    background-color: var(--background);
+    flex-shrink: 0;
+}
+
+.streamer-avatar[src=""] {
+    background-color: var(--background-light);
+    border-color: var(--border-color);
 }
 
 .stream-info {
     flex: 1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    min-width: 0;
+    align-items: center;
+}
+
+.streamer-details {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    min-width: 0;
 }
 
 .streamer-name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .game-name {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-color-secondary);
-    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stream-stats {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    margin-left: auto;
+    margin-right: 30px;
 }
 
 .viewer-count, .stream-duration {
-    font-size: 12px;
-    color: var(--text-color-secondary);
     display: flex;
     align-items: center;
     gap: 4px;
+    font-size: 12px;
+    color: var(--text-color-secondary);
+    white-space: nowrap;
+}
+
+.viewer-count svg, .stream-duration svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.8;
+}
+
+/* Stream item indicator */
+.stream-item::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 8px;
+    width: 8px;
+    height: 8px;
+    background-color: #FF0000;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
 }
 
 /* Loading spinner */
@@ -253,4 +316,225 @@ h1 {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--twitch-purple);
+}
+
+/* Styles spécifiques pour le bouton de déconnexion */
+#logoutButton {
+    padding: 8px;
+    min-width: 36px;
+    height: 36px;
+}
+
+#logoutButton svg {
+    width: 18px;
+    height: 18px;
+}
+
+.login-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+/* Animation for the live indicator */
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(255, 0, 0, 0);
+    }
+    
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+/* Style pour le badge partenaire */
+.partner-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 4px;
+    color: var(--twitch-purple);
+}
+
+.partner-badge svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Styles pour les onglets */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 0 4px;
+}
+
+.tab-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--background-light);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.tab-button.active {
+    background: var(--twitch-purple);
+    border-color: var(--twitch-purple);
+}
+
+.tab-button:hover:not(.active) {
+    background: var(--border-color);
+}
+
+.tab-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Ajuster le style pour la liste des chaînes */
+#channelsList {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* Assure que les colonnes se partagent l'espace équitablement */
+    gap: 8px;
+    padding: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* Cacher la scrollbar pour Chrome, Safari et Opera */
+#channelsList::-webkit-scrollbar {
+    display: none;
+}
+
+.channel-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 4px; /* Réduire le padding horizontal */
+    border-radius: 8px;
+    background-color: var(--background-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    width: 100%; /* Assure que l'élément prend toute la largeur de sa cellule */
+    position: relative;
+}
+
+.channel-item:hover {
+    background-color: var(--border-color);
+    transform: translateY(-2px);
+}
+
+.channel-item .streamer-avatar {
+    width: 40px; /* Réduire légèrement la taille */
+    height: 40px;
+    margin: 0 0 6px 0;
+    border: 2px solid var(--twitch-purple);
+}
+
+.channel-item .streamer-name {
+    font-size: 11px; /* Réduire légèrement la taille de la police */
+    width: 100%;
+    padding: 0 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Supprimer les styles non nécessaires pour la vue grille */
+.channel-item .stream-info,
+.channel-item .streamer-details,
+.channel-item .game-name {
+    display: none;
+}
+
+/* Style pour le bouton favori */
+.favorite-button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.favorite-button svg {
+    width: 14px;
+    height: 14px;
+}
+
+.favorite-button:hover svg {
+    fill: #9146FF;
+}
+
+.favorite-button.active svg {
+    fill: #9146FF;
+}
+
+/* Ajuster le style des éléments pour accommoder le bouton favori */
+.stream-item, .channel-item {
+    position: relative;
+}
+
+/* Animation pour les favoris */
+.favorite-button.active {
+    transform: scale(1.1);
+}
+
+.favorite-button:active {
+    transform: scale(0.9);
+}
+
+/* Style personnalisé pour les conteneurs avec défilement */
+#streamList, #channelsList {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overflow-y: auto;
+}
+
+#streamList::-webkit-scrollbar, 
+#channelsList::-webkit-scrollbar {
+    display: none;
+}
+
+/* Assurer que le contenu reste scrollable mais sans scrollbar visible */
+.container {
+    max-height: 600px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.container::-webkit-scrollbar {
+    display: none;
 } 
