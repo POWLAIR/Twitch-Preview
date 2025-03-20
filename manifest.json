@@ -10,32 +10,32 @@
   },
   "permissions": [
     "storage",
+    "notifications",
+    "alarms",
     "tabs",
     "https://api.twitch.tv/*",
     "https://id.twitch.tv/*",
     "https://twitch-preview.vercel.app/*",
     "https://embed.twitch.tv/*",
-    "https://player.twitch.tv/*",
-    "notifications",
-    "alarms"
+    "https://player.twitch.tv/*"
   ],
   "browser_action": {
     "default_popup": "src/popup/index.html",
+    "default_title": "Twitch Preview",
     "default_icon": {
       "16": "src/assets/icons/icon-16.png",
       "48": "src/assets/icons/icon-48.png",
       "128": "src/assets/icons/icon-128.png"
-    },
-    "default_title": "Twitch Preview"
+    }
   },
   "options_ui": {
     "page": "src/options/options.html",
     "browser_style": true,
-    "open_in_tab": true
+    "open_in_tab": false
   },
   "background": {
     "page": "src/background/background.html",
-    "persistent": false
+    "persistent": true
   },
   "web_accessible_resources": [
     "src/auth/auth.html",
