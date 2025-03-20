@@ -6,6 +6,9 @@ let cachedStreams = null;
 let cachedUserData = null;
 let lastRefreshTime = 0;
 let cachedFavorites = null;
+let currentPreviewTimer = null;
+let currentPreviewStreamer = null;
+const previewDelay = 500; 
 
 // DOM Elements
 const elements = {
@@ -239,6 +242,56 @@ function createStreamElement(stream) {
         window.open(`https://twitch.tv/${stream.user_login}`, '_blank');
     });
 
+    // Ajouter les gestionnaires d'événements pour la prévisualisation
+    streamItem.addEventListener('mouseenter', (event) => {
+        if (currentPreviewTimer) {
+            clearTimeout(currentPreviewTimer);
+        }
+        
+        currentPreviewTimer = setTimeout(() => {
+            const previewElement = document.getElementById('streamPreview');
+            const previewContent = previewElement.querySelector('.preview-content');
+            
+            // Nettoyer la prévisualisation précédente
+            previewContent.innerHTML = '';
+            
+            // Créer et ajouter la nouvelle prévisualisation
+            const previewContainer = createPreviewIframe(stream.user_login);
+            previewContent.appendChild(previewContainer);
+            
+            // Afficher la prévisualisation
+            previewElement.classList.remove('hidden');
+            setTimeout(() => previewElement.classList.add('visible'), 50);
+            
+            currentPreviewStreamer = stream.user_login;
+            
+            // Mettre à jour la position initiale
+            updatePreviewPosition(event, previewElement);
+        }, previewDelay);
+    });
+
+    streamItem.addEventListener('mousemove', (event) => {
+        if (currentPreviewStreamer) {
+            const previewElement = document.getElementById('streamPreview');
+            updatePreviewPosition(event, previewElement);
+        }
+    });
+
+    streamItem.addEventListener('mouseleave', () => {
+        if (currentPreviewTimer) {
+            clearTimeout(currentPreviewTimer);
+            currentPreviewTimer = null;
+        }
+        
+        const previewElement = document.getElementById('streamPreview');
+        previewElement.classList.remove('visible');
+        setTimeout(() => {
+            previewElement.classList.add('hidden');
+            previewElement.querySelector('.preview-content').innerHTML = '';
+            currentPreviewStreamer = null;
+        }, 200);
+    });
+
     return streamItem;
 }
 
@@ -249,12 +302,18 @@ function updateUserInfo(userData) {
     elements.userInfo.classList.remove('hidden');
     elements.loginPrompt.classList.add('hidden');
     elements.refreshButton.classList.remove('hidden');
+    
+    // Afficher les onglets quand l'utilisateur est connecté
+    document.querySelector('.tabs').classList.remove('hidden');
 }
 
 function showLoginPrompt() {
     elements.loginPrompt.classList.remove('hidden');
     elements.userInfo.classList.add('hidden');
     elements.refreshButton.classList.add('hidden');
+    
+    // Cacher les onglets quand l'utilisateur n'est pas connecté
+    document.querySelector('.tabs').classList.add('hidden');
 }
 
 function showLoading() {
@@ -489,6 +548,68 @@ async function loadFavorites() {
         console.error('Error loading favorites:', error);
         cachedFavorites = new Set();
     }
+}
+
+// Modifier la fonction createPreviewIframe
+function createPreviewIframe(streamerName) {
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'preview-container';
+    
+    // Créer l'image de prévisualisation
+    const previewImage = document.createElement('img');
+    previewImage.className = 'preview-image';
+    // Utiliser l'API Twitch pour obtenir une image de prévisualisation
+    previewImage.src = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamerName}-320x180.jpg?${Date.now()}`; // Ajouter timestamp pour éviter le cache
+    previewImage.alt = `${streamerName} stream preview`;
+    
+    // Ajouter un overlay avec les informations du stream
+    const overlay = document.createElement('div');
+    overlay.className = 'preview-overlay';
+    overlay.innerHTML = `
+        <div class="preview-info">
+            <div class="preview-header">
+                <span class="preview-name">${streamerName}</span>
+                <span class="preview-live">EN DIRECT</span>
+            </div>
+            <div class="preview-message">Cliquez pour regarder</div>
+        </div>
+    `;
+    
+    previewContainer.appendChild(previewImage);
+    previewContainer.appendChild(overlay);
+    
+    return previewContainer;
+}
+
+// Modifier la fonction updatePreviewPosition
+function updatePreviewPosition(event, previewElement) {
+    const container = document.querySelector('.container');
+    const containerRect = container.getBoundingClientRect();
+    
+    // Dimensions de la prévisualisation
+    const previewWidth = 320;
+    const previewHeight = 180;
+    
+    // Centrer horizontalement par rapport à la fenêtre de l'extension
+    const left = (containerRect.width - previewWidth) / 2;
+    
+    // Calculer la position verticale en fonction de la position de la souris
+    // mais en restant dans les limites de la fenêtre
+    const mouseRelativeY = event.clientY - containerRect.top;
+    let top = mouseRelativeY - previewHeight / 2;
+    
+    // Ajuster si la prévisualisation dépasse en haut
+    if (top < 10) {
+        top = 10;
+    }
+    
+    // Ajuster si la prévisualisation dépasse en bas
+    if (top + previewHeight > containerRect.height - 10) {
+        top = containerRect.height - previewHeight - 10;
+    }
+    
+    previewElement.style.left = `${left}px`;
+    previewElement.style.top = `${top}px`;
 }
 
 // Initialize the popup when the document is loaded

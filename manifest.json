@@ -13,7 +13,9 @@
     "tabs",
     "https://api.twitch.tv/*",
     "https://id.twitch.tv/*",
-    "https://twitch-preview.vercel.app/*"
+    "https://twitch-preview.vercel.app/*",
+    "https://embed.twitch.tv/*",
+    "https://player.twitch.tv/*"
   ],
   "browser_action": {
     "default_popup": "src/popup/index.html",
@@ -37,5 +39,5 @@
     "src/auth/auth.html",
     "src/options/options.html"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://embed.twitch.tv; object-src 'self'; frame-src https://player.twitch.tv https://*.twitch.tv https://embed.twitch.tv"
 } 

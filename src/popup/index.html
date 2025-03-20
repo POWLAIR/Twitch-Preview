@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <script src="https://embed.twitch.tv/embed/v1.js"></script>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Twitch Preview</h1>
+        <header class="header">
+            <div class="title-container">
+                <img src="../assets/icons/icon-48.png" alt="Twitch Preview Logo" class="header-logo">
+                <h1>Twitch Preview</h1>
+            </div>
             <button id="refreshButton" class="button" title="Rafraîchir">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -103,6 +107,10 @@
                 </div>
             </div>
         </template>
+
+        <div id="streamPreview" class="stream-preview hidden">
+            <div class="preview-content"></div>
+        </div>
     </div>
     <script type="module" src="popup.js"></script>
 </body>
