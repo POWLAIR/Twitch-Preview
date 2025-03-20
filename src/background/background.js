@@ -1,8 +1,34 @@
 import { TwitchAuth } from './auth.js';
 import { getFollowedChannels, getFollowedStreams } from '../api/twitch.js';
+import { notificationManager } from '../utils/notifications.js';
 
 // Initialisation de l'authentification
 const auth = new TwitchAuth();
+
+// Initialiser le gestionnaire de notifications
+notificationManager.initialize();
+
+// Créer une alarme pour vérifier les nouveaux streams
+browser.alarms.create('checkNewStreams', {
+    periodInMinutes: 1
+});
+
+// Écouter l'alarme
+browser.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === 'checkNewStreams') {
+        notificationManager.checkNewStreams();
+    }
+});
+
+// Gérer les clics sur les notifications
+browser.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+    if (notificationId.startsWith('stream_') && buttonIndex === 0) {
+        const [, userId] = notificationId.split('_');
+        browser.tabs.create({
+            url: `https://twitch.tv/${userId}`
+        });
+    }
+});
 
 // Gestion des messages
 browser.runtime.onMessage.addListener(async (message, sender) => {

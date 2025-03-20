@@ -15,7 +15,9 @@
     "https://id.twitch.tv/*",
     "https://twitch-preview.vercel.app/*",
     "https://embed.twitch.tv/*",
-    "https://player.twitch.tv/*"
+    "https://player.twitch.tv/*",
+    "notifications",
+    "alarms"
   ],
   "browser_action": {
     "default_popup": "src/popup/index.html",

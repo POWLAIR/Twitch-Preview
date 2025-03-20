@@ -40,16 +40,41 @@ Une extension de navigateur pour suivre vos streamers Twitch préférés et acc�
 
 ### Structure du projet
 
-```
+```sh
 twitch-preview/
-├── manifest.json           # Configuration de l'extension
-├── src/
-│   └── background.js      # Script de fond (authentification, API)
+├── manifest.json # Configuration de l'extension
+├── api/
+│ ├── config.js # Configuration de l'API
+│ └── twitch.js # Intégration API Twitch
+├── assets/icons/
+│ ├── icon-16.png
+│ ├── icon-48.png
+│ ├── icon-128.png
+│ └── icon.png # Icône principale
+├── auth/
+│ ├── auth.css # Styles de la page d'authentification
+│ ├── auth.html # Page d'authentification
+│ └── auth.js # Logique d'authentification
+├── background/
+│ ├── background.html # Page de fond
+│ └── background.js # Script de fond
+├── options/
+│ ├── options.css # Styles des options
+│ ├── options.html # Page des options
+│ └── options.js # Logique des options
 ├── popup/
-│   ├── index.html         # Interface de la popup
-│   ├── style.css         # Styles de la popup
-│   └── popup.js          # Logique de la popup
-└── icons/                # Icônes de l'extension
+│ ├── index.html # Interface principale
+│ ├── popup.js # Logique de la popup
+│ └── style.css # Styles de la popup
+├── preview/
+│ ├── constants.js # Constantes
+│ ├── utils.js # Fonctions utilitaires
+│ ├── env.example.js # Template de configuration
+│ └── formatters.js # Fonctions de formatage
+├── .gitignore # Configuration Git
+├── LICENSE # Licence du projet
+├── oauth-redirect.html # Page redirection
+└── README.md # Documentation du projet
 ```
 
 ## Développement
@@ -84,7 +109,5 @@ MIT License - voir le fichier LICENSE pour plus de détails.
 
 ## À venir
 
-- [ ] Notifications pour les streams qui démarrent
-- [ ] Filtres par catégorie/jeu
 - [ ] Mode sombre/clair
 - [ ] Configuration des préférences utilisateur 

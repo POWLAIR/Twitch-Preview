@@ -1,83 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Twitch Preview - Options</title>
-    <link rel="stylesheet" href="options.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Configuration de Twitch Preview</h1>
-        </header>
-
-        <main>
-            <section class="auth-section">
-                <h2>Authentification Twitch</h2>
-                <div id="auth-status" class="status-box">
-                    <div class="status-indicator"></div>
-                    <span id="status-text">Vérification de la connexion...</span>
-                </div>
-
-                <div id="user-info" class="hidden">
-                    <img id="user-avatar" src="" alt="Avatar">
-                    <span id="user-name"></span>
-                    <button id="logout-btn" class="button danger">
-                        Se déconnecter
-                    </button>
-                </div>
-
-                <div id="login-section" class="hidden">
-                    <p class="info-text">
-                        Pour utiliser Twitch Preview, vous devez vous connecter avec votre compte Twitch.
-                        Cela permettra à l'extension d'accéder à la liste de vos chaînes suivies.
-                    </p>
-                    <button id="login-btn" class="button primary">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                            <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
-                        </svg>
-                        Se connecter avec Twitch
-                    </button>
-                </div>
-            </section>
-
-            <section class="settings-section">
-                <h2>Paramètres de redirection</h2>
-                <div class="form-group">
-                    <label for="redirect-url">URL de redirection OAuth</label>
-                    <input type="text" id="redirect-url" readonly>
-                    <button id="copy-url" class="button secondary">
-                        Copier l'URL
-                    </button>
-                    <p class="help-text">
-                        Cette URL doit être ajoutée dans les paramètres de votre application Twitch 
-                        (Console développeur > Votre Application > OAuth Redirect URLs)
-                    </p>
-                </div>
-            </section>
-
-            <section class="settings-section">
-                <h2>Paramètres de notification</h2>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="enable-notifications">
-                        Activer les notifications pour les streams
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="open-popup">
-                        Ouvrir les streams dans une fenêtre contextuelle
-                    </label>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <div id="save-status" class="hidden">Paramètres sauvegardés</div>
-            <button id="save-btn" class="button primary">Enregistrer les modifications</button>
-        </footer>
+<div class="settings-section">
+    <h2>Notifications</h2>
+    <div class="setting-item">
+        <label>
+            <input type="checkbox" id="enableNotifications">
+            Activer les notifications
+        </label>
     </div>
-    <script type="module" src="options.js"></script>
-</body>
-</html> 
+    <div class="setting-item">
+        <label>
+            <input type="checkbox" id="favoritesOnlyNotifications">
+            Notifier uniquement pour les streamers favoris
+        </label>
+    </div>
+</div> 
