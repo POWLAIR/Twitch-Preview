@@ -1,40 +1,44 @@
-# Twitch Preview
+# Extension Twitch pour navigateur
 
-Une extension Firefox qui permet de voir en temps réel les chaînes Twitch que vous suivez et qui sont en direct.
+Une extension de navigateur pour suivre vos streamers Twitch préférés et accéder rapidement à leurs streams en direct.
 
 ## Fonctionnalités
 
-- 🔴 Affichage des streams en direct
-- 👥 Liste des streamers suivis
-- 🔄 Rafraîchissement manuel des données
-- 🎮 Informations sur le jeu en cours
-- 👁️ Nombre de spectateurs en temps réel
+- 🔴 Voir les streams en direct des chaînes que vous suivez
+- 👥 Consulter la liste de vos chaînes suivies
+- ⭐ Système de favoris pour marquer vos streamers préférés
+- 🖼️ Prévisualisation des streams au survol
+- 🔔 Badge de notification indiquant le nombre de streams en direct
+- 🌙 Interface sombre adaptée à Twitch
+- 🔄 Actualisation automatique des données
+- 🔒 Authentification sécurisée via Twitch
 
 ## Installation
 
-1. Clonez ce dépôt :
-```bash
-git clone https://github.com/votre-username/twitch-preview.git
-cd twitch-preview
-```
+1. Clonez ce dépôt
+2. Ouvrez votre navigateur et accédez à la page des extensions
+3. Activez le mode développeur
+4. Cliquez sur "Charger l'extension non empaquetée"
+5. Sélectionnez le dossier du projet
 
-2. Créez une application sur la [Console Développeur Twitch](https://dev.twitch.tv/console/apps)
-   - Cliquez sur "Register Your Application"
-   - Remplissez le formulaire
-   - Notez votre Client ID et générez un Client Secret
+## Utilisation
 
-3. Configurez l'extension :
-   - Ouvrez `src/background.js`
-   - Remplacez `YOUR_CLIENT_ID` et `YOUR_CLIENT_SECRET` par vos identifiants Twitch
+1. Cliquez sur l'icône de l'extension dans votre barre d'outils
+2. Connectez-vous avec votre compte Twitch
+3. Naviguez entre les onglets "Streams en direct" et "Chaînes suivies"
+4. Marquez vos streamers favoris en cliquant sur l'étoile
+5. Survolez un stream pour voir une prévisualisation
+6. Cliquez sur un stream pour l'ouvrir sur Twitch
 
-4. Installez l'extension dans Firefox :
-   - Ouvrez Firefox
-   - Allez à `about:debugging`
-   - Cliquez sur "Ce Firefox"
-   - Cliquez sur "Charger un module temporaire"
-   - Sélectionnez le fichier `manifest.json` du projet
+## Configuration requise
 
-## Structure du projet
+- Un navigateur compatible avec les WebExtensions (Chrome, Firefox, Edge)
+- Un compte Twitch
+- Une connexion Internet
+
+## Développement
+
+### Structure du projet
 
 ```
 twitch-preview/
@@ -80,7 +84,6 @@ MIT License - voir le fichier LICENSE pour plus de détails.
 
 ## À venir
 
-- [ ] Aperçu vidéo au survol (hover preview)
 - [ ] Notifications pour les streams qui démarrent
 - [ ] Filtres par catégorie/jeu
 - [ ] Mode sombre/clair
