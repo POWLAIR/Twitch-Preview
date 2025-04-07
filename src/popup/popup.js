@@ -8,7 +8,7 @@ let lastRefreshTime = 0;
 let cachedFavorites = null;
 let currentPreviewTimer = null;
 let currentPreviewStreamer = null;
-const previewDelay = 500; 
+const previewDelay = 500;
 
 // DOM Elements
 const elements = {
@@ -105,7 +105,7 @@ async function refreshStreams(forceRefresh = false) {
 
     try {
         // D'abord, récupérer les chaînes suivies
-        const channelsResponse = await browser.runtime.sendMessage({ 
+        const channelsResponse = await browser.runtime.sendMessage({
             type: 'GET_FOLLOWED_CHANNELS',
             first: 100
         });
@@ -115,7 +115,7 @@ async function refreshStreams(forceRefresh = false) {
         }
 
         // Ensuite, récupérer les streams en direct
-        const streamsResponse = await browser.runtime.sendMessage({ 
+        const streamsResponse = await browser.runtime.sendMessage({
             type: 'GET_FOLLOWED_STREAMS',
             first: 100
         });
@@ -151,10 +151,10 @@ async function refreshStreams(forceRefresh = false) {
 // Display streams
 function displayStreams(streams) {
     elements.streamList.innerHTML = '';
-    
+
     // Mettre à jour le badge avec le nombre de streams
     updateBadgeCount(streams?.length || 0);
-    
+
     if (!streams || streams.length === 0) {
         const emptyMessage = document.createElement('div');
         emptyMessage.className = 'empty-message';
@@ -227,11 +227,11 @@ function createStreamElement(stream) {
     if (streamStats) {
         const viewerCount = streamStats.querySelector('.viewer-count');
         const streamDuration = streamStats.querySelector('.stream-duration');
-        
+
         if (viewerCount) {
             viewerCount.querySelector('.count').textContent = formatViewerCount(stream.viewer_count);
         }
-        
+
         if (streamDuration) {
             streamDuration.querySelector('.duration').textContent = formatStreamDuration(stream.started_at);
         }
@@ -247,24 +247,24 @@ function createStreamElement(stream) {
         if (currentPreviewTimer) {
             clearTimeout(currentPreviewTimer);
         }
-        
+
         currentPreviewTimer = setTimeout(() => {
             const previewElement = document.getElementById('streamPreview');
             const previewContent = previewElement.querySelector('.preview-content');
-            
+
             // Nettoyer la prévisualisation précédente
             previewContent.innerHTML = '';
-            
+
             // Créer et ajouter la nouvelle prévisualisation
             const previewContainer = createPreviewIframe(stream.user_login);
             previewContent.appendChild(previewContainer);
-            
+
             // Afficher la prévisualisation
             previewElement.classList.remove('hidden');
             setTimeout(() => previewElement.classList.add('visible'), 50);
-            
+
             currentPreviewStreamer = stream.user_login;
-            
+
             // Mettre à jour la position initiale
             updatePreviewPosition(event, previewElement);
         }, previewDelay);
@@ -282,7 +282,7 @@ function createStreamElement(stream) {
             clearTimeout(currentPreviewTimer);
             currentPreviewTimer = null;
         }
-        
+
         const previewElement = document.getElementById('streamPreview');
         previewElement.classList.remove('visible');
         setTimeout(() => {
@@ -302,7 +302,7 @@ function updateUserInfo(userData) {
     elements.userInfo.classList.remove('hidden');
     elements.loginPrompt.classList.add('hidden');
     elements.refreshButton.classList.remove('hidden');
-    
+
     // Afficher les onglets quand l'utilisateur est connecté
     document.querySelector('.tabs').classList.remove('hidden');
 }
@@ -311,7 +311,7 @@ function showLoginPrompt() {
     elements.loginPrompt.classList.remove('hidden');
     elements.userInfo.classList.add('hidden');
     elements.refreshButton.classList.add('hidden');
-    
+
     // Cacher les onglets quand l'utilisateur n'est pas connecté
     document.querySelector('.tabs').classList.add('hidden');
 }
@@ -357,10 +357,10 @@ async function handleLogout() {
             cachedStreams = null;
             cachedUserData = null;
             lastRefreshTime = 0;
-            
+
             // Réinitialiser le badge
             await updateBadgeCount(0);
-            
+
             // Recharger la popup pour revenir à l'état initial
             window.location.reload();
         } else {
@@ -410,7 +410,7 @@ function switchTab(tabName) {
     // Mettre à jour les classes active des boutons
     elements.liveTab.classList.toggle('active', tabName === 'live');
     elements.channelsTab.classList.toggle('active', tabName === 'channels');
-    
+
     // Mettre à jour le contenu visible
     elements.liveContent.classList.toggle('active', tabName === 'live');
     elements.channelsContent.classList.toggle('active', tabName === 'channels');
@@ -427,7 +427,7 @@ function switchTab(tabName) {
 async function loadFollowedChannels() {
     showLoading();
     try {
-        const response = await browser.runtime.sendMessage({ 
+        const response = await browser.runtime.sendMessage({
             type: 'GET_FOLLOWED_CHANNELS',
             first: 100
         });
@@ -437,7 +437,7 @@ async function loadFollowedChannels() {
         }
 
         // Trier les chaînes par ordre alphabétique (en ignorant la casse)
-        const sortedChannels = response.channels.sort((a, b) => 
+        const sortedChannels = response.channels.sort((a, b) =>
             a.display_name.toLowerCase().localeCompare(b.display_name.toLowerCase())
         );
 
@@ -452,7 +452,7 @@ async function loadFollowedChannels() {
 // Fonction pour afficher les chaînes
 function displayChannels(channels) {
     elements.channelsList.innerHTML = '';
-    
+
     if (!channels || channels.length === 0) {
         const emptyMessage = document.createElement('div');
         emptyMessage.className = 'empty-message';
@@ -470,31 +470,48 @@ function displayChannels(channels) {
 }
 
 // Fonction pour créer un élément de chaîne
+function createFavoriteButton() {
+    const button = document.createElement('button');
+    button.className = 'favorite-button';
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', '16');
+    svg.setAttribute('height', '16');
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z');
+
+    svg.appendChild(path);
+    button.appendChild(svg);
+    return button;
+}
+
 function createChannelElement(channel) {
     const channelItem = document.createElement('div');
     channelItem.className = 'channel-item';
-    
-    // Ajouter le bouton favori
-    const favoriteButton = document.createElement('button');
-    favoriteButton.className = `favorite-button ${cachedFavorites.has(channel.broadcaster_id) ? 'active' : ''}`;
-    favoriteButton.innerHTML = `
-        <svg viewBox="0 0 24 24" width="16" height="16">
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-        </svg>
-    `;
-    
-    channelItem.innerHTML = `
-        <img class="streamer-avatar" src="${channel.profile_image_url}" alt="${channel.display_name}">
-        <div class="streamer-name">${channel.display_name}</div>
-    `;
-    
+
+    const favoriteButton = createFavoriteButton();
+    favoriteButton.classList.toggle('active', cachedFavorites.has(channel.broadcaster_id));
+
+    const avatar = document.createElement('img');
+    avatar.className = 'streamer-avatar';
+    avatar.src = channel.profile_image_url;
+    avatar.alt = channel.display_name;
+
+    const name = document.createElement('div');
+    name.className = 'streamer-name';
+    name.textContent = channel.display_name;
+
+    channelItem.appendChild(avatar);
+    channelItem.appendChild(name);
     channelItem.appendChild(favoriteButton);
 
     // Gérer les clics séparément
     channelItem.addEventListener('click', () => {
         window.open(`https://twitch.tv/${channel.broadcaster_login}`, '_blank');
     });
-    
+
     favoriteButton.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleFavorite(channel.broadcaster_id, channel.display_name);
@@ -511,11 +528,11 @@ async function toggleFavorite(channelId, channelName) {
         } else {
             cachedFavorites.add(channelId);
         }
-        
+
         await browser.storage.local.set({
             favorites: Array.from(cachedFavorites)
         });
-        
+
         // Rafraîchir l'affichage selon l'onglet actif
         if (elements.liveContent.classList.contains('active')) {
             displayStreams(cachedStreams);
@@ -532,7 +549,7 @@ function sortWithFavorites(items) {
     return items.sort((a, b) => {
         const aIsFavorite = cachedFavorites.has(a.user_id || a.broadcaster_id);
         const bIsFavorite = cachedFavorites.has(b.user_id || b.broadcaster_id);
-        
+
         if (aIsFavorite && !bIsFavorite) return -1;
         if (!aIsFavorite && bIsFavorite) return 1;
         return 0;
@@ -551,33 +568,51 @@ async function loadFavorites() {
 }
 
 // Modifier la fonction createPreviewIframe
+function createPreviewOverlay(streamerName) {
+    const overlay = document.createElement('div');
+    overlay.className = 'preview-overlay';
+
+    const previewInfo = document.createElement('div');
+    previewInfo.className = 'preview-info';
+
+    const previewHeader = document.createElement('div');
+    previewHeader.className = 'preview-header';
+
+    const previewName = document.createElement('span');
+    previewName.className = 'preview-name';
+    previewName.textContent = streamerName;
+
+    const previewLive = document.createElement('span');
+    previewLive.className = 'preview-live';
+    previewLive.textContent = 'EN DIRECT';
+
+    const previewMessage = document.createElement('div');
+    previewMessage.className = 'preview-message';
+    previewMessage.textContent = 'Cliquez pour regarder';
+
+    previewHeader.appendChild(previewName);
+    previewHeader.appendChild(previewLive);
+    previewInfo.appendChild(previewHeader);
+    previewInfo.appendChild(previewMessage);
+    overlay.appendChild(previewInfo);
+
+    return overlay;
+}
+
 function createPreviewIframe(streamerName) {
     const previewContainer = document.createElement('div');
     previewContainer.className = 'preview-container';
-    
-    // Créer l'image de prévisualisation
+
     const previewImage = document.createElement('img');
     previewImage.className = 'preview-image';
-    // Utiliser l'API Twitch pour obtenir une image de prévisualisation
-    previewImage.src = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamerName}-320x180.jpg?${Date.now()}`; // Ajouter timestamp pour éviter le cache
+    previewImage.src = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamerName}-320x180.jpg?${Date.now()}`;
     previewImage.alt = `${streamerName} stream preview`;
-    
-    // Ajouter un overlay avec les informations du stream
-    const overlay = document.createElement('div');
-    overlay.className = 'preview-overlay';
-    overlay.innerHTML = `
-        <div class="preview-info">
-            <div class="preview-header">
-                <span class="preview-name">${streamerName}</span>
-                <span class="preview-live">EN DIRECT</span>
-            </div>
-            <div class="preview-message">Cliquez pour regarder</div>
-        </div>
-    `;
-    
+
+    const overlay = createPreviewOverlay(streamerName);
+
     previewContainer.appendChild(previewImage);
     previewContainer.appendChild(overlay);
-    
+
     return previewContainer;
 }
 
@@ -585,29 +620,29 @@ function createPreviewIframe(streamerName) {
 function updatePreviewPosition(event, previewElement) {
     const container = document.querySelector('.container');
     const containerRect = container.getBoundingClientRect();
-    
+
     // Dimensions de la prévisualisation
     const previewWidth = 320;
     const previewHeight = 180;
-    
+
     // Centrer horizontalement par rapport à la fenêtre de l'extension
     const left = (containerRect.width - previewWidth) / 2;
-    
+
     // Calculer la position verticale en fonction de la position de la souris
     // mais en restant dans les limites de la fenêtre
     const mouseRelativeY = event.clientY - containerRect.top;
     let top = mouseRelativeY - previewHeight / 2;
-    
+
     // Ajuster si la prévisualisation dépasse en haut
     if (top < 10) {
         top = 10;
     }
-    
+
     // Ajuster si la prévisualisation dépasse en bas
     if (top + previewHeight > containerRect.height - 10) {
         top = containerRect.height - previewHeight - 10;
     }
-    
+
     previewElement.style.left = `${left}px`;
     previewElement.style.top = `${top}px`;
 }
@@ -616,7 +651,7 @@ function updatePreviewPosition(event, previewElement) {
 document.addEventListener('DOMContentLoaded', async () => {
     await loadFavorites(); // Charger les favoris avant d'initialiser
     initializePopup();
-    
+
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
     document.getElementById('checkAuthButton').addEventListener('click', checkExistingAuth);
 }); 
