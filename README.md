@@ -146,11 +146,7 @@ Les contributions sont les bienvenues ! Pour contribuer :
 
 Distribué sous la licence Mozilla Public License 2.0. Voir `LICENSE` pour plus d'informations.
 
-## Contact
 
-Votre Nom - [@votre_twitter](https://twitter.com/votre_twitter)
-
-Lien du projet : [https://github.com/votre-username/twitch-preview](https://github.com/votre-username/twitch-preview)
 
 ## Remerciements
 
