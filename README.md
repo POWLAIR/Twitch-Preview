@@ -1,113 +1,124 @@
-# Extension Twitch pour navigateur
+# Twitch Preview
 
-Une extension de navigateur pour suivre vos streamers Twitch préférés et accéder rapidement à leurs streams en direct.
+Une extension de navigateur pour améliorer votre expérience Twitch en prévisualisant les streams en direct de vos chaînes suivies.
+
+![Version](https://img.shields.io/badge/version-1.0.0-purple)
+![Licence](https://img.shields.io/badge/license-MPL--2.0-blue)
+![Navigateurs](https://img.shields.io/badge/browsers-Firefox%20-green)
 
 ## Fonctionnalités
 
-- 🔴 Voir les streams en direct des chaînes que vous suivez
-- 👥 Consulter la liste de vos chaînes suivies
-- ⭐ Système de favoris pour marquer vos streamers préférés
-- 🖼️ Prévisualisation des streams au survol
-- 🔔 Badge de notification indiquant le nombre de streams en direct
-- 🌙 Interface sombre adaptée à Twitch
-- 🔄 Actualisation automatique des données
-- 🔒 Authentification sécurisée via Twitch
+- Prévisualisation instantanée des streams en direct
+- Liste organisée de vos chaînes suivies
+- Système de favoris pour marquer vos streamers préférés
+- Notifications personnalisables pour les nouveaux streams
+- Interface sombre moderne
+- Actualisation automatique des données
+- Design responsive
+- Authentification sécurisée via Twitch
 
 ## Installation
 
-1. Clonez ce dépôt
-2. Ouvrez votre navigateur et accédez à la page des extensions
-3. Activez le mode développeur
-4. Cliquez sur "Charger l'extension non empaquetée"
-5. Sélectionnez le dossier du projet
+### Pour les utilisateurs
+1. Téléchargez l'extension depuis :
+   - [Firefox Add-ons](lien_firefox)
+   - [Chrome Web Store](lien_chrome)
+   - [Edge Add-ons](lien_edge)
 
-## Utilisation
-
-1. Cliquez sur l'icône de l'extension dans votre barre d'outils
-2. Connectez-vous avec votre compte Twitch
-3. Naviguez entre les onglets "Streams en direct" et "Chaînes suivies"
-4. Marquez vos streamers favoris en cliquant sur l'étoile
-5. Survolez un stream pour voir une prévisualisation
-6. Cliquez sur un stream pour l'ouvrir sur Twitch
-
-## Configuration requise
-
-- Un navigateur compatible avec les WebExtensions (Chrome, Firefox, Edge)
-- Un compte Twitch
-- Une connexion Internet
-
-## Développement
-
-### Structure du projet
-
-```sh
-twitch-preview/
-├── manifest.json # Configuration de l'extension
-├── api/
-│ ├── config.js # Configuration de l'API
-│ └── twitch.js # Intégration API Twitch
-├── assets/icons/
-│ ├── icon-16.png
-│ ├── icon-48.png
-│ ├── icon-128.png
-│ └── icon.png # Icône principale
-├── auth/
-│ ├── auth.css # Styles de la page d'authentification
-│ ├── auth.html # Page d'authentification
-│ └── auth.js # Logique d'authentification
-├── background/
-│ ├── background.html # Page de fond
-│ └── background.js # Script de fond
-├── options/
-│ ├── options.css # Styles des options
-│ ├── options.html # Page des options
-│ └── options.js # Logique des options
-├── popup/
-│ ├── index.html # Interface principale
-│ ├── popup.js # Logique de la popup
-│ └── style.css # Styles de la popup
-├── preview/
-│ ├── constants.js # Constantes
-│ ├── utils.js # Fonctions utilitaires
-│ ├── env.example.js # Template de configuration
-│ └── formatters.js # Fonctions de formatage
-├── .gitignore # Configuration Git
-├── LICENSE # Licence du projet
-├── oauth-redirect.html # Page redirection
-└── README.md # Documentation du projet
+### Pour les développeurs
+1. Clonez le dépôt :
+```bash
+git clone https://github.com/votre-username/twitch-preview.git
+cd twitch-preview
 ```
 
-## Développement
+2. Configuration de l'API Twitch :
+   - Créez une application sur [Twitch Developer Console](https://dev.twitch.tv/console)
+   - Copiez `src/utils/env.example.js` vers `src/utils/env.js`
+   - Remplissez vos identifiants Twitch dans `env.js`
 
-### Prérequis
+3. Installation dans le navigateur :
+   - Firefox : Ouvrez `about:debugging` > "Ce Firefox" > "Charger un module temporaire"
+   - Chrome : Ouvrez `chrome://extensions` > "Mode développeur" > "Charger l'extension non empaquetée"
+   - Edge : Ouvrez `edge://extensions` > "Mode développeur" > "Charger l'extension non empaquetée"
 
-- Firefox Developer Edition ou Firefox
-- Un compte développeur Twitch
-- Node.js et npm (pour le développement futur)
+## Structure du projet
 
-### Installation pour le développement
+```
+twitch-preview/
+├── manifest.json           # Configuration de l'extension
+├── src/
+│   ├── api/               # Intégration API Twitch
+│   ├── assets/           # Images et icônes
+│   ├── auth/             # Authentification
+│   ├── background/       # Scripts d'arrière-plan
+│   ├── options/         # Page des options
+│   ├── popup/           # Interface principale
+│   ├── utils/           # Utilitaires
+│   └── vendor/          # Dépendances externes
+└── docs/                # Documentation
+```
 
-1. Suivez les étapes d'installation ci-dessus
-2. Pour recharger l'extension après des modifications :
-   - Dans `about:debugging`
-   - Trouvez l'extension
-   - Cliquez sur "Recharger"
+## Configuration
+
+### Options disponibles
+- Activer/désactiver les notifications
+- Notifications uniquement pour les favoris
+- Intervalle de rafraîchissement
+- Gestion des favoris
+
+### Permissions requises
+- `storage` : Stockage des préférences
+- `notifications` : Alertes de streams
+- `tabs` : Ouverture des streams
+- `https://api.twitch.tv/*` : API Twitch
+
+## Sécurité
+
+- Authentification OAuth 2.0 avec Twitch
+- Stockage sécurisé des tokens
+- CSP stricte
+- Aucune donnée personnelle collectée
 
 ## Contribution
 
-Les contributions sont les bienvenues ! N'hésitez pas à :
+Les contributions sont les bienvenues ! Pour contribuer :
 
-1. Fork le projet
-2. Créer une branche pour votre fonctionnalité
-3. Commiter vos changements
-4. Pousser vers la branche
-5. Ouvrir une Pull Request
+1. Forkez le projet
+2. Créez une branche (`git checkout -b feature/AmazingFeature`)
+3. Committez vos changements (`git commit -m 'Add: Amazing Feature'`)
+4. Pushez vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrez une Pull Request
+
+### Guidelines
+- Respectez le style de code existant
+- Documentez les nouvelles fonctionnalités
+- Testez vos modifications
+- Mettez à jour la documentation si nécessaire
 
 ## Licence
 
-MIT License - voir le fichier LICENSE pour plus de détails.
+Distribué sous la licence Mozilla Public License 2.0. Voir `LICENSE` pour plus d'informations.
 
-## À venir
+## Contact
 
-- [ ] Mode sombre/clair
-- [ ] Configuration des préférences utilisateur 
+Votre Nom - [@votre_twitter](https://twitter.com/votre_twitter)
+
+Lien du projet : [https://github.com/votre-username/twitch-preview](https://github.com/votre-username/twitch-preview)
+
+## Remerciements
+
+- [Twitch API](https://dev.twitch.tv/docs)
+- La communauté des développeurs d'extensions
+- Tous les testeurs et contributeurs
+
+## Statistiques
+
+- Stars : [nombre]
+- Forks : [nombre]
+- Téléchargements : [nombre]
+- Contributeurs : [nombre]
+
+---
+Fait avec passion par PowlAIR
+
