@@ -4,7 +4,7 @@
 
 [![Version](https://img.shields.io/badge/version-1.0.0-purple)](https://github.com/votre-username/twitch-preview/releases)
 [![Licence](https://img.shields.io/badge/license-MPL--2.0-blue)](LICENSE)
-[![Navigateurs](https://img.shields.io/badge/browsers-Firefox%20|%20Chrome%20|%20Edge-green)](#installation)
+[![Navigateurs](https://img.shields.io/badge/browsers-Firefox%20-green)](#installation)
 
 **Prévisualisez vos streams Twitch préférés directement depuis votre navigateur**
 
