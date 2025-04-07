@@ -4,7 +4,21 @@ Une extension de navigateur pour améliorer votre expérience Twitch en prévisu
 
 ![Version](https://img.shields.io/badge/version-1.0.0-purple)
 ![Licence](https://img.shields.io/badge/license-MPL--2.0-blue)
-![Navigateurs](https://img.shields.io/badge/browsers-Firefox%20-green)
+![Navigateurs](https://img.shields.io/badge/browsers-Firefox%20|%20Chrome%20|%20Edge-green)
+
+## Aperçu
+
+### Page de connexion
+![Page de connexion](docs/images/login.png)
+*Interface de connexion avec authentification Twitch*
+
+### Streams en direct
+![Streams en direct](docs/images/streams.png)
+*Liste des streams en direct avec prévisualisation au survol*
+
+### Chaînes suivies
+![Chaînes suivies](docs/images/channels.png)
+*Gestion des chaînes suivies et des favoris*
 
 ## Fonctionnalités
 
