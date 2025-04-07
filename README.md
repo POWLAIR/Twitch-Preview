@@ -1,24 +1,42 @@
 # Twitch Preview
 
-Une extension de navigateur pour améliorer votre expérience Twitch en prévisualisant les streams en direct de vos chaînes suivies.
+<div align="center">
 
-![Version](https://img.shields.io/badge/version-1.0.0-purple)
-![Licence](https://img.shields.io/badge/license-MPL--2.0-blue)
-![Navigateurs](https://img.shields.io/badge/browsers-Firefox%20|%20Chrome%20|%20Edge-green)
+[![Version](https://img.shields.io/badge/version-1.0.0-purple)](https://github.com/votre-username/twitch-preview/releases)
+[![Licence](https://img.shields.io/badge/license-MPL--2.0-blue)](LICENSE)
+[![Navigateurs](https://img.shields.io/badge/browsers-Firefox%20|%20Chrome%20|%20Edge-green)](#installation)
 
-## Aperçu
+**Prévisualisez vos streams Twitch préférés directement depuis votre navigateur**
 
-### Page de connexion
-![Page de connexion](docs/images/login.png)
-*Interface de connexion avec authentification Twitch*
+[Installation](#installation) •
+[Fonctionnalités](#fonctionnalités) •
+[Documentation](#documentation) •
+[Contribution](#contribution) •
+[Support](#contact)
 
-### Streams en direct
-![Streams en direct](docs/images/streams.png)
-*Liste des streams en direct avec prévisualisation au survol*
+</div>
 
-### Chaînes suivies
-![Chaînes suivies](docs/images/channels.png)
-*Gestion des chaînes suivies et des favoris*
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <img src="docs/images/login.png" alt="Page de connexion" width="250"/><br/>
+        <b>Page de connexion</b><br/>
+        <sub>Interface de connexion avec authentification Twitch</sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="docs/images/streams.png" alt="Streams en direct" width="250"/><br/>
+        <b>Streams en direct</b><br/>
+        <sub>Liste des streams en direct avec prévisualisation au survol</sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="docs/images/channels.png" alt="Chaînes suivies" width="250"/><br/>
+        <b>Chaînes suivies</b><br/>
+        <sub>Gestion des chaînes suivies et des favoris</sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ## Fonctionnalités
 
@@ -33,13 +51,17 @@ Une extension de navigateur pour améliorer votre expérience Twitch en prévisu
 
 ## Installation
 
-### Pour les utilisateurs
+<details>
+<summary><b>Pour les utilisateurs</b></summary>
+
 1. Téléchargez l'extension depuis :
    - [Firefox Add-ons](lien_firefox)
-   - [Chrome Web Store](lien_chrome)
-   - [Edge Add-ons](lien_edge)
 
-### Pour les développeurs
+</details>
+
+<details>
+<summary><b>Pour les développeurs</b></summary>
+
 1. Clonez le dépôt :
 ```bash
 git clone https://github.com/votre-username/twitch-preview.git
@@ -56,7 +78,12 @@ cd twitch-preview
    - Chrome : Ouvrez `chrome://extensions` > "Mode développeur" > "Charger l'extension non empaquetée"
    - Edge : Ouvrez `edge://extensions` > "Mode développeur" > "Charger l'extension non empaquetée"
 
-## Structure du projet
+</details>
+
+## Documentation
+
+<details>
+<summary><b>Structure du projet</b></summary>
 
 ```
 twitch-preview/
@@ -73,7 +100,10 @@ twitch-preview/
 └── docs/                # Documentation
 ```
 
-## Configuration
+</details>
+
+<details>
+<summary><b>Configuration</b></summary>
 
 ### Options disponibles
 - Activer/désactiver les notifications
@@ -86,6 +116,8 @@ twitch-preview/
 - `notifications` : Alertes de streams
 - `tabs` : Ouverture des streams
 - `https://api.twitch.tv/*` : API Twitch
+
+</details>
 
 ## Sécurité
 
@@ -126,13 +158,10 @@ Lien du projet : [https://github.com/votre-username/twitch-preview](https://gith
 - La communauté des développeurs d'extensions
 - Tous les testeurs et contributeurs
 
-## Statistiques
-
-- Stars : [nombre]
-- Forks : [nombre]
-- Téléchargements : [nombre]
-- Contributeurs : [nombre]
 
 ---
-Fait avec passion par PowlAIR
+
+<div align="center">
+  <sub>Fait avec passion par PowlAIR</sub>
+</div>
 
