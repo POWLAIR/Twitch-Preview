@@ -25,7 +25,7 @@ class NotificationManager {
         try {
             // Récupérer les favoris et les streams en direct
             const { favorites } = await browser.storage.local.get('favorites');
-            const response = await browser.runtime.sendMessage({ 
+            const response = await browser.runtime.sendMessage({
                 type: 'GET_FOLLOWED_STREAMS',
                 first: 100
             });
@@ -33,7 +33,7 @@ class NotificationManager {
             if (!response.success) return;
 
             const currentStreams = response.streams;
-            
+
             for (const stream of currentStreams) {
                 const streamerId = stream.user_id;
                 const streamKey = `${streamerId}_${stream.started_at}`;
@@ -69,7 +69,7 @@ class NotificationManager {
 
     async createStreamNotification(stream) {
         const notificationId = `stream_${stream.user_id}_${Date.now()}`;
-        
+
         await browser.notifications.create(notificationId, {
             type: 'basic',
             iconUrl: stream.profile_image_url,
@@ -78,6 +78,24 @@ class NotificationManager {
             buttons: [
                 { title: 'Regarder le stream' }
             ]
+        });
+
+        // Gérer le clic sur la notification
+        browser.notifications.onClicked.addListener((clickedId) => {
+            if (clickedId === notificationId) {
+                browser.tabs.create({
+                    url: `https://twitch.tv/${stream.user_login}`
+                });
+            }
+        });
+
+        // Gérer le clic sur le bouton
+        browser.notifications.onButtonClicked.addListener((clickedId, buttonIndex) => {
+            if (clickedId === notificationId && buttonIndex === 0) {
+                browser.tabs.create({
+                    url: `https://twitch.tv/${stream.user_login}`
+                });
+            }
         });
     }
 
@@ -96,7 +114,7 @@ class NotificationManager {
             ...this.notificationPreferences,
             ...preferences
         };
-        
+
         await browser.storage.local.set({
             notificationPreferences: this.notificationPreferences
         });

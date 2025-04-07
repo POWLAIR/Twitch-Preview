@@ -26,19 +26,6 @@ function updateBadge(count) {
     }
 }
 
-// Fonction pour créer une notification
-function createNotification(stream) {
-    const options = {
-        type: 'basic',
-        iconUrl: stream.profile_image_url,
-        title: `${stream.display_name} est en live !`,
-        message: stream.title,
-        contextMessage: `Joue à ${stream.game_name}`,
-    };
-
-    browser.notifications.create(`stream-${stream.id}`, options);
-}
-
 // Fonction pour vérifier les nouveaux streams
 async function checkNewStreams() {
     try {
@@ -64,11 +51,11 @@ async function checkNewStreams() {
         const { streams } = await getFollowedStreams(auth.token, user.id);
         const currentStreams = new Map(streams.map(stream => [stream.id, stream]));
 
-        // Détecter les nouveaux streams
+        // Détecter les nouveaux streams et notifier via le notificationManager
         for (const [streamId, stream] of currentStreams) {
             if (!state.activeStreams.has(streamId)) {
-                // Nouveau stream détecté
-                createNotification(stream);
+                // Nouveau stream détecté, utiliser le notificationManager
+                await notificationManager.createStreamNotification(stream);
             }
         }
 
@@ -185,4 +172,7 @@ browser.notifications.onClicked.addListener((notificationId) => {
             });
         }
     }
-}); 
+});
+
+// Initialiser le notificationManager au démarrage
+notificationManager.initialize(); 
