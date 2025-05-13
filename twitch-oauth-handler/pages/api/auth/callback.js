@@ -5,7 +5,7 @@ export default function handler(req, res) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Authentification Twitch</title>
+    <title>Twitch Preview - Redirection OAuth</title>
     <style>
         body {
             background-color: #0E0E10;
@@ -18,6 +18,7 @@ export default function handler(req, res) {
             margin: 0;
             text-align: center;
         }
+
         .container {
             padding: 2rem;
             background-color: #18181B;
@@ -26,6 +27,7 @@ export default function handler(req, res) {
             width: 90%;
             max-width: 400px;
         }
+
         .spinner {
             width: 48px;
             height: 48px;
@@ -35,13 +37,19 @@ export default function handler(req, res) {
             margin: 0 auto 1rem;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .error {
+
+        #message {
+            margin-bottom: 0.5rem;
+        }
+
+        #error {
             color: #FF6B6B;
-            margin-top: 1rem;
+            display: none;
         }
     </style>
 </head>
@@ -49,46 +57,63 @@ export default function handler(req, res) {
     <div class="container">
         <div id="spinner" class="spinner"></div>
         <p id="message">Authentification en cours...</p>
-        <p id="error" class="error" style="display: none;"></p>
+        <p id="error"></p>
     </div>
 
     <script>
-        (function () {
-            const hash = window.location.hash;
-            const params = new URLSearchParams(hash.substring(1));
-            const token = params.get("access_token");
-            const state = params.get("state");
-            const errorEl = document.getElementById("error");
+        document.addEventListener('DOMContentLoaded', () => {
+            const spinner = document.getElementById('spinner');
+            const message = document.getElementById('message');
+            const errorBox = document.getElementById('error');
 
-            function showError(message) {
-                document.getElementById("spinner").style.display = "none";
-                document.getElementById("message").textContent = "Erreur";
-                errorEl.style.display = "block";
-                errorEl.textContent = message;
+            function showError(text) {
+                spinner.style.display = 'none';
+                message.textContent = 'Erreur lors de l’authentification';
+                errorBox.style.display = 'block';
+                errorBox.textContent = text;
+            }
+
+            function showSuccess() {
+                spinner.style.display = 'none';
+                message.textContent = 'Connexion réussie. Fermeture...';
+                message.style.color = '#4ade80';
             }
 
             try {
+                const hash = window.location.hash;
+                const params = new URLSearchParams(hash.substring(1));
+                const token = params.get('access_token');
+                const state = params.get('state');
+
                 if (!token || !state) {
-                    return showError("Paramètre manquant dans l'URL.");
+                    return showError('Paramètres manquants dans l’URL.');
                 }
 
                 const stateObj = JSON.parse(atob(state));
                 const extensionId = stateObj.extensionId;
 
                 if (!extensionId) {
-                    return showError("extensionId manquant dans le state.");
+                    return showError('extensionId manquant dans le state.');
                 }
 
                 const redirectUrl = \`moz-extension://\${extensionId}/src/auth/auth.html#access_token=\${token}\`;
-                window.location.href = redirectUrl;
+
+                showSuccess();
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                    setTimeout(() => {
+                        window.close();
+                    }, 2000);
+                }, 1500);
             } catch (err) {
-                showError("Erreur lors du traitement : " + err.message);
+                showError('Erreur de traitement : ' + err.message);
             }
-        })();
+        });
     </script>
 </body>
 </html>
     `;
+
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send(html);
 }
