@@ -95,8 +95,13 @@ export default function handler(req, res) {
                 if (!extensionId) {
                     return showError('extensionId manquant dans le state.');
                 }
+                    
+                let extensionScheme = 'chrome-extension';
+                if (navigator.userAgent.includes('Firefox') || navigator.userAgent.includes('Gecko')) {
+                    extensionScheme = 'moz-extension';
+                }
 
-                const redirectUrl = \`moz-extension://\${extensionId}/src/auth/auth.html#access_token=\${token}\`;
+                const redirectUrl = \`${extensionScheme}://\${extensionId}/src/auth/auth.html#access_token=\${token}\`;
 
                 showSuccess();
                 setTimeout(() => {

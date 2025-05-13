@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="../vendor/twitch-embed.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="title-container">
+                <img src="../assets/icons/icon-48.png" alt="Twitch Preview Logo" class="header-logo">
+                <h1>Twitch Preview</h1>
+            </div>
+            <button id="refreshButton" class="button" title="Rafraîchir">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Rafraîchir
+            </button>
+        </header>
+
+        <div id="userInfo" class="user-info hidden">
+            <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
+            <span id="userName" class="user-name"></span>
+            <button id="logoutButton" class="button secondary" title="Se déconnecter">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="tabs">
+            <button id="liveTab" class="tab-button active">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z" />
+                </svg>
+                Streams en direct
+            </button>
+            <button id="channelsTab" class="tab-button">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                    <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" />
+                </svg>
+                Chaînes suivies
+            </button>
+        </div>
+
+        <div id="contentContainer">
+            <div id="liveContent" class="tab-content active">
+                <div id="streamList"></div>
+            </div>
+            <div id="channelsContent" class="tab-content">
+                <div id="channelsList"></div>
+            </div>
+        </div>
+
+        <div id="loginPrompt" class="login-prompt hidden">
+            <h2>Bienvenue sur Twitch Preview</h2>
+            <p>Connectez-vous avec votre compte Twitch pour voir les streams en direct de vos chaînes suivies.</p>
+            <div class="login-buttons">
+                <button id="loginButton" class="button">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                        <path
+                            d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
+                    </svg>
+                    Se connecter avec Twitch
+                </button>
+                <button id="checkAuthButton" class="button secondary" title="Vérifier l'authentification">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Vérifier la connexion
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <span>Chargement des streams...</span>
+        </div>
+
+        <div id="errorMessage" class="error-message hidden"></div>
+
+        <template id="streamItemTemplate">
+            <div class="stream-item">
+                <img class="streamer-avatar" src="" alt="Streamer Avatar">
+                <div class="stream-info">
+                    <div class="streamer-details">
+                        <div class="streamer-name"></div>
+                        <div class="game-name"></div>
+                    </div>
+                    <div class="stream-stats">
+                        <span class="viewer-count">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <path
+                                    d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                            </svg>
+                            <span class="count"></span>
+                        </span>
+                        <span class="stream-duration">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <path
+                                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z" />
+                            </svg>
+                            <span class="duration"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <div id="streamPreview" class="stream-preview hidden">
+            <div class="preview-content"></div>
+        </div>
+    </div>
+    <script type="module" src="popup.js"></script>
+</body>
+
+</html>
