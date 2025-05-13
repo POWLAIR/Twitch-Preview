@@ -39,7 +39,12 @@
   },
   "web_accessible_resources": [
     "src/auth/auth.html",
+    "src/auth/oauth-redirect.html",
     "src/options/options.html"
   ],
-  "content_security_policy": "script-src 'self' https://embed.twitch.tv; object-src 'self'; frame-src https://player.twitch.tv https://*.twitch.tv https://embed.twitch.tv"
+  "content_security_policy": "default-src 'self'; connect-src https://api.twitch.tv https://id.twitch.tv; script-src 'self' https://embed.twitch.tv https://id.twitch.tv; object-src 'self'; frame-src https://player.twitch.tv https://*.twitch.tv https://embed.twitch.tv",
+  "host_permissions": [
+    "https://api.twitch.tv/*",
+    "https://id.twitch.tv/*"
+  ]
 }

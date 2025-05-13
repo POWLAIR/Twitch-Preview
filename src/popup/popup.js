@@ -378,12 +378,12 @@ async function handleLogout() {
 async function checkExistingAuth() {
     showLoading();
     try {
-        const storage = await browser.storage.local.get(['accessToken']);
-        if (storage.accessToken) {
+        const storage = await browser.storage.local.get(['twitchToken']);
+        if (storage.twitchToken) {
             // Vérifie si le token est toujours valide
             const response = await fetch('https://api.twitch.tv/helix/users', {
                 headers: {
-                    'Authorization': `Bearer ${storage.accessToken}`,
+                    'Authorization': `Bearer ${storage.twitchToken}`,
                     'Client-Id': 'YOUR_CLIENT_ID'
                 }
             });

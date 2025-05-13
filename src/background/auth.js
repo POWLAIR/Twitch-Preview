@@ -43,10 +43,10 @@ export class TwitchAuth {
         // Obtient l'UUID de l'extension depuis browser.runtime.getURL
         const extensionUrl = browser.runtime.getURL('');
         const extensionId = extensionUrl.split('/')[2]; // Extrait l'UUID de l'URL
-        
+
         // Obtient l'URL d'authentification depuis la configuration avec l'UUID
         const authUrl = TWITCH_API.getAuthURL(extensionId);
-        
+
         // Ouvre la fenêtre d'authentification Twitch dans une popup
         await browser.windows.create({
             url: authUrl,
@@ -142,7 +142,7 @@ export class TwitchAuth {
                 console.error('Erreur lors de la révocation du token:', error);
             }
         }
-        
+
         await this.clearToken();
     }
 } 
