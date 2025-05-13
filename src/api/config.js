@@ -8,7 +8,7 @@ export const TWITCH_API = {
     VALIDATE_URL: 'https://id.twitch.tv/oauth2/validate',
     API_URL: 'https://api.twitch.tv/helix',
 
-    REDIRECT_URI: 'https://twitch-preview.vercel.app/api/auth/callback',
+    REDIRECT_URI: 'https://twitch-oauth-handler.vercel.app/api/auth/callback',
 
     SCOPES: [
         'user:read:follows',
