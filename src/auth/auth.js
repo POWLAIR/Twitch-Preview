@@ -29,7 +29,7 @@ async function handleAuth() {
 
         if (response.success) {
             messageElement.textContent = 'Authentification réussie !';
-            setTimeout(() => window.close(), 1500);
+            setTimeout(() => window.close(), 10);
         } else {
             throw new Error(response.error || "Erreur lors de l'enregistrement du token");
         }
