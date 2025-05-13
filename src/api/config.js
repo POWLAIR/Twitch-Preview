@@ -20,7 +20,8 @@ export const TWITCH_API = {
 
         const stateObj = {
             csrf: crypto.randomUUID(),
-            extensionId: extensionId
+            extensionId: extensionId,
+            timestamp: Date.now()
         };
         const state = btoa(JSON.stringify(stateObj));
 
@@ -30,7 +31,7 @@ export const TWITCH_API = {
             redirect_uri: this.REDIRECT_URI,
             scope: this.SCOPES.join(' '),
             state: state,
-            force_verify: 'false'
+            force_verify: 'true'
         });
 
         return `${this.AUTH_URL}?${params.toString()}`;

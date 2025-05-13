@@ -15,7 +15,7 @@
     "tabs",
     "https://api.twitch.tv/*",
     "https://id.twitch.tv/*",
-    "https://twitch-preview.vercel.app/*",
+    "https://twitch-oauth-handler.vercel.app/*",
     "https://embed.twitch.tv/*",
     "https://player.twitch.tv/*"
   ],
@@ -39,12 +39,12 @@
   },
   "web_accessible_resources": [
     "src/auth/auth.html",
-    "src/auth/oauth-redirect.html",
     "src/options/options.html"
   ],
-  "content_security_policy": "default-src 'self'; connect-src https://api.twitch.tv https://id.twitch.tv; script-src 'self' https://embed.twitch.tv https://id.twitch.tv; object-src 'self'; frame-src https://player.twitch.tv https://*.twitch.tv https://embed.twitch.tv",
+  "content_security_policy": "default-src 'self'; connect-src https://api.twitch.tv https://id.twitch.tv https://twitch-oauth-handler.vercel.app; script-src 'self' https://embed.twitch.tv https://id.twitch.tv; object-src 'self'; frame-src https://player.twitch.tv https://*.twitch.tv https://embed.twitch.tv",
   "host_permissions": [
     "https://api.twitch.tv/*",
-    "https://id.twitch.tv/*"
+    "https://id.twitch.tv/*",
+    "https://twitch-oauth-handler.vercel.app/*"
   ]
 }
