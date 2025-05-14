@@ -96,19 +96,30 @@ export default function handler(req, res) {
                     return showError('extensionId manquant dans le state.');
                 }
 
-                let extensionScheme = 'chrome-extension';
-                if (navigator.userAgent.includes('Firefox') || navigator.userAgent.includes('Gecko')) {
-                    extensionScheme = 'moz-extension';
+                // Si chrome.runtime est disponible, on envoie le token à l'extension (Chrome)
+                if (window.chrome && chrome.runtime && chrome.runtime.sendMessage) {
+                    try {
+                        chrome.runtime.sendMessage(extensionId, { type: 'OAUTH_TOKEN', token: token }, function(response) {
+                            showSuccess();
+                            setTimeout(function() {
+                                window.close();
+                            }, 1500);
+                        });
+                    } catch (err) {
+                        showError('Erreur lors de l’envoi du token à l’extension : ' + err.message);
+                    }
+                } else {
+                    // Sinon, on fait la redirection classique (Firefox)
+                    var extensionScheme = 'moz-extension';
+                    var redirectUrl = extensionScheme + '://' + extensionId + '/src/auth/auth.html#access_token=' + token;
+                    showSuccess();
+                    setTimeout(function() {
+                        window.location.href = redirectUrl;
+                        setTimeout(function() {
+                            window.close();
+                        }, 2000);
+                    }, 1500);
                 }
-
-                const redirectUrl = \`\${extensionScheme}://\${extensionId}/src/auth/auth.html#access_token=\${token}\`;
-                showSuccess();
-                setTimeout(() => {
-                    window.location.href = redirectUrl;
-                    setTimeout(() => {
-                        window.close();
-                    }, 2000);
-                }, 1500);
             } catch (err) {
                 showError('Erreur de traitement : ' + err.message);
             }
