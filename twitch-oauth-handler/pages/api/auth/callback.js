@@ -96,20 +96,9 @@ export default function handler(req, res) {
                     return showError('extensionId manquant dans le state.');
                 }
 
-                // Si chrome.runtime est disponible, on envoie le token à l'extension (Chrome)
-                if (window.chrome && chrome.runtime && chrome.runtime.sendMessage) {
-                    try {
-                        chrome.runtime.sendMessage(extensionId, { type: 'OAUTH_TOKEN', token: token }, function(response) {
-                            showSuccess();
-                            setTimeout(function() {
-                                window.close();
-                            }, 1500);
-                        });
-                    } catch (err) {
-                        showError('Erreur lors de l’envoi du token à l’extension : ' + err.message);
-                    }
-                } else {
-                    // Sinon, on fait la redirection classique (Firefox)
+                const isFirefox = navigator.userAgent.includes('Firefox') || navigator.userAgent.includes('Gecko');
+                if (isFirefox) {
+                    // Redirection vers l'extension Firefox
                     var extensionScheme = 'moz-extension';
                     var redirectUrl = extensionScheme + '://' + extensionId + '/src/auth/auth.html#access_token=' + token;
                     showSuccess();
@@ -119,6 +108,13 @@ export default function handler(req, res) {
                             window.close();
                         }, 2000);
                     }, 1500);
+                } else {
+                    // Chrome : on affiche juste un message
+                    showSuccess();
+                    message.textContent = "Connexion réussie. Vous pouvez fermer cette fenêtre et retourner sur l'extension.";
+                    setTimeout(function() {
+                        window.close();
+                    }, 3000);
                 }
             } catch (err) {
                 showError('Erreur de traitement : ' + err.message);
