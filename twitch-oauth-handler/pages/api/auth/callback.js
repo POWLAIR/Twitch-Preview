@@ -97,6 +97,8 @@ export default function handler(req, res) {
                 }
 
                 const isFirefox = navigator.userAgent.includes('Firefox') || navigator.userAgent.includes('Gecko');
+                console.log(isFirefox);
+                console.log(navigator.userAgent);
                 if (isFirefox) {
                     // Redirection vers l'extension Firefox
                     var extensionScheme = 'moz-extension';
