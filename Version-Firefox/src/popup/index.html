@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
-    <script src="../vendor/twitch-embed.js"></script>
+
 </head>
 
 <body>
@@ -26,6 +26,12 @@
         <div id="userInfo" class="user-info hidden">
             <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
             <span id="userName" class="user-name"></span>
+            <button id="optionsButton" class="button secondary" title="Options">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" />
+                </svg>
+            </button>
             <button id="logoutButton" class="button secondary" title="Se déconnecter">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path
@@ -122,7 +128,7 @@
             <div class="preview-content"></div>
         </div>
     </div>
-    <script type="module" src="popup.js"></script>
+    <script src="popup-firefox.js"></script>
 </body>
 
 </html>

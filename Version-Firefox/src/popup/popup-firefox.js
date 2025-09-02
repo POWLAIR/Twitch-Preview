@@ -1,7 +1,35 @@
-import { TWITCH_API } from '../api/config.js';
-import { CACHE } from '../utils/constants.js';
-import { formatViewerCount, formatStreamDuration } from '../utils/formatters.js';
+// Popup script pour Firefox - Version compatible sans modules ES6
 
+// Configuration et constantes
+const CACHE = {
+    STREAMS_REFRESH_INTERVAL: 2 * 60 * 1000, // 2 minutes
+    USER_DATA_REFRESH_INTERVAL: 5 * 60 * 1000 // 5 minutes
+};
+
+// Fonctions de formatage
+function formatViewerCount(count) {
+    if (count >= 1000000) {
+        return (count / 1000000).toFixed(1) + 'M';
+    } else if (count >= 1000) {
+        return (count / 1000).toFixed(1) + 'k';
+    }
+    return count.toString();
+}
+
+function formatStreamDuration(startedAt) {
+    const now = new Date();
+    const start = new Date(startedAt);
+    const diffMs = now - start;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (diffHours > 0) {
+        return `${diffHours}h ${diffMins}m`;
+    }
+    return `${diffMins}m`;
+}
+
+// Variables globales
 let cachedStreams = null;
 let cachedUserData = null;
 let lastRefreshTime = 0;
@@ -337,10 +365,10 @@ function hideError() {
 async function updateBadgeCount(count) {
     try {
         if (count > 0) {
-            await browser.browserAction.setBadgeText({ text: count.toString() });
-            await browser.browserAction.setBadgeBackgroundColor({ color: '#9146FF' }); // Couleur Twitch
+            await browser.action.setBadgeText({ text: count.toString() });
+            await browser.action.setBadgeBackgroundColor({ color: '#9146FF' }); // Couleur Twitch
         } else {
-            await browser.browserAction.setBadgeText({ text: '' }); // Enlève le badge si pas de streams
+            await browser.action.setBadgeText({ text: '' }); // Enlève le badge si pas de streams
         }
     } catch (error) {
         console.error('Error updating badge:', error);
@@ -384,7 +412,7 @@ async function checkExistingAuth() {
             const response = await fetch('https://api.twitch.tv/helix/users', {
                 headers: {
                     'Authorization': `Bearer ${storage.twitchToken}`,
-                    'Client-Id': 'YOUR_CLIENT_ID'
+                    'Client-Id': 's5cljtoy5dr0udoy0jmvh62u5979kf'
                 }
             });
 
@@ -647,6 +675,25 @@ function updatePreviewPosition(event, previewElement) {
     previewElement.style.top = `${top}px`;
 }
 
+// Fonction pour ouvrir les options
+function openOptions() {
+    try {
+        // Essayer d'ouvrir la page d'options dans un nouvel onglet
+        browser.tabs.create({
+            url: browser.runtime.getURL('src/options/options.html')
+        });
+    } catch (error) {
+        console.error('Erreur lors de l\'ouverture des options:', error);
+        // Fallback: essayer d'ouvrir via runtime
+        try {
+            browser.runtime.openOptionsPage();
+        } catch (fallbackError) {
+            console.error('Erreur fallback options:', fallbackError);
+            alert('Impossible d\'ouvrir les options. Allez dans about:addons > Twitch Preview > Préférences');
+        }
+    }
+}
+
 // Initialize the popup when the document is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     await loadFavorites(); // Charger les favoris avant d'initialiser
@@ -654,4 +701,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
     document.getElementById('checkAuthButton').addEventListener('click', checkExistingAuth);
-}); 
+
+    // Ajouter le gestionnaire pour le bouton options
+    const optionsButton = document.getElementById('optionsButton');
+    if (optionsButton) {
+        optionsButton.addEventListener('click', openOptions);
+    }
+});
