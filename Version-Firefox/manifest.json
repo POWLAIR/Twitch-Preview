@@ -5,7 +5,7 @@
   "description": "Prévisualisez les streams Twitch de vos chaînes suivies",
   "browser_specific_settings": {
     "gecko": {
-      "id": "{27c3ab93-b691-4ea7-81f2-7fe7719069e5}",
+      "id": "{e01ea678-85d9-425b-a5cb-bfaabdf40255}",
       "strict_min_version": "109.0"
     }
   },
