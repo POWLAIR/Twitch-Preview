@@ -2,83 +2,83 @@ import Head from 'next/head';
 import { GetStaticProps } from 'next';
 
 interface Props {
-    version: string;
-    buildTime: string;
+  version: string;
+  buildTime: string;
 }
 
 export default function Home({ version, buildTime }: Props) {
-    return (
-        <>
-            <Head>
-                <title>Twitch Preview OAuth Handler</title>
-                <meta name="description" content="Service d'authentification OAuth pour l'extension Twitch Preview" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <meta name="robots" content="noindex, nofollow" />
-                <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>" />
-            </Head>
+  return (
+    <>
+      <Head>
+        <title>Twitch Preview OAuth Handler</title>
+        <meta name="description" content="Service d'authentification OAuth pour l'extension Twitch Preview" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>" />
+      </Head>
 
-            <main className="container">
-                <div className="hero">
-                    <div className="logo">
-                        <span className="logo-icon">🔐</span>
-                        <h1>Twitch Preview</h1>
-                        <p className="subtitle">OAuth Authentication Handler</p>
-                    </div>
+      <main className="container">
+        <div className="hero">
+          <div className="logo">
+            <span className="logo-icon">🔐</span>
+            <h1>Twitch Preview</h1>
+            <p className="subtitle">OAuth Authentication Handler</p>
+          </div>
 
-                    <div className="info">
-                        <div className="status">
-                            <span className="status-indicator"></span>
-                            <span>Service en ligne</span>
-                        </div>
+          <div className="info">
+            <div className="status">
+              <span className="status-indicator"></span>
+              <span>Service en ligne</span>
+            </div>
 
-                        <div className="version">
-                            <strong>Version:</strong> {version}
-                        </div>
+            <div className="version">
+              <strong>Version:</strong> {version}
+            </div>
 
-                        <div className="build-time">
-                            <strong>Dernière mise à jour:</strong> {buildTime}
-                        </div>
-                    </div>
+            <div className="build-time">
+              <strong>Dernière mise à jour:</strong> {buildTime}
+            </div>
+          </div>
 
-                    <div className="description">
-                        <h2>À propos</h2>
-                        <p>
-                            Ce service gère l'authentification OAuth de Twitch pour l'extension de navigateur
-                            <strong> Twitch Preview</strong>. Il permet aux utilisateurs de se connecter
-                            de manière sécurisée à leur compte Twitch.
-                        </p>
-                    </div>
+          <div className="description">
+            <h2>À propos</h2>
+            <p>
+              Ce service gère l'authentification OAuth de Twitch pour l'extension de navigateur
+              <strong> Twitch Preview</strong>. Il permet aux utilisateurs de se connecter
+              de manière sécurisée à leur compte Twitch.
+            </p>
+          </div>
 
-                    <div className="endpoints">
-                        <h2>Endpoints disponibles</h2>
-                        <div className="endpoint">
-                            <code>GET /api/auth/callback</code>
-                            <span>Handler de callback OAuth Twitch</span>
-                        </div>
-                    </div>
+          <div className="endpoints">
+            <h2>Endpoints disponibles</h2>
+            <div className="endpoint">
+              <code>GET /api/auth/callback</code>
+              <span>Handler de callback OAuth Twitch</span>
+            </div>
+          </div>
 
-                    <div className="links">
-                        <a
-                            href="https://github.com/username/twitch-preview"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="link"
-                        >
-                            📚 Documentation
-                        </a>
-                        <a
-                            href="https://dev.twitch.tv/docs/authentication/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="link"
-                        >
-                            🔗 API Twitch
-                        </a>
-                    </div>
-                </div>
-            </main>
+          <div className="links">
+            <a
+              href="https://github.com/powlair/twitch-preview"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link"
+            >
+              📚 Documentation
+            </a>
+            <a
+              href="https://dev.twitch.tv/docs/authentication/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link"
+            >
+              🔗 API Twitch
+            </a>
+          </div>
+        </div>
+      </main>
 
-            <style jsx>{`
+      <style jsx>{`
         .container {
           min-height: 100vh;
           padding: 2rem;
@@ -257,23 +257,23 @@ export default function Home({ version, buildTime }: Props) {
           }
         }
       `}</style>
-        </>
-    );
+    </>
+  );
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-    const packageJson = await import('../package.json');
+  const packageJson = await import('../package.json');
 
-    return {
-        props: {
-            version: packageJson.version,
-            buildTime: new Date().toLocaleDateString('fr-FR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })
-        }
-    };
+  return {
+    props: {
+      version: packageJson.version,
+      buildTime: new Date().toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    }
+  };
 };

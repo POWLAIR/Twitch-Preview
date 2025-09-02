@@ -2,46 +2,46 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 export default function Custom404() {
-    return (
-        <>
-            <Head>
-                <title>404 - Page non trouvée | Twitch Preview OAuth</title>
-                <meta name="robots" content="noindex, nofollow" />
-            </Head>
+  return (
+    <>
+      <Head>
+        <title>404 - Page non trouvée | Twitch Preview OAuth</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
 
-            <main className="container">
-                <div className="error-content">
-                    <div className="error-icon">🔍</div>
-                    <h1>404</h1>
-                    <h2>Page non trouvée</h2>
-                    <p>
-                        La page que vous recherchez n'existe pas ou a été déplacée.
-                    </p>
+      <main className="container">
+        <div className="error-content">
+          <div className="error-icon">🔍</div>
+          <h1>404</h1>
+          <h2>Page non trouvée</h2>
+          <p>
+            La page que vous recherchez n'existe pas ou a été déplacée.
+          </p>
 
-                    <div className="actions">
-                        <Link href="/" className="button primary">
-                            🏠 Retour à l'accueil
-                        </Link>
-                        <a
-                            href="https://github.com/username/twitch-preview"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="button secondary"
-                        >
-                            📚 Documentation
-                        </a>
-                    </div>
+          <div className="actions">
+            <Link href="/" className="button primary">
+              🏠 Retour à l'accueil
+            </Link>
+            <a
+              href="https://github.com/username/twitch-preview"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button secondary"
+            >
+              📚 Documentation
+            </a>
+          </div>
 
-                    <div className="info">
-                        <p>
-                            <strong>Service OAuth pour Twitch Preview</strong><br />
-                            Ce service gère uniquement l'authentification OAuth.
-                        </p>
-                    </div>
-                </div>
-            </main>
+          <div className="info">
+            <p>
+              <strong>Service OAuth pour Twitch Preview</strong><br />
+              Ce service gère uniquement l'authentification OAuth.
+            </p>
+          </div>
+        </div>
+      </main>
 
-            <style jsx>{`
+      <style jsx>{`
         .container {
           min-height: 100vh;
           display: flex;
@@ -166,6 +166,6 @@ export default function Custom404() {
           }
         }
       `}</style>
-        </>
-    );
+    </>
+  );
 }
