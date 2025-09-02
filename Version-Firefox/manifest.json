@@ -1,8 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Twitch Preview",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Prévisualisez les streams Twitch de vos chaînes suivies",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "twitch-preview@powlair.dev",
+      "strict_min_version": "109.0"
+    }
+  },
   "icons": {
     "16": "src/assets/icons/icon-16.png",
     "48": "src/assets/icons/icon-48.png",

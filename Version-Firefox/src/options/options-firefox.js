@@ -37,12 +37,27 @@ function showSaveMessage() {
 
     const message = document.createElement('div');
     message.className = 'save-message';
-    message.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 6L9 17l-5-5"/>
-        </svg>
-        Préférences sauvegardées
-    `;
+
+    // Créer le SVG de manière sécurisée
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '16');
+    svg.setAttribute('height', '16');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2');
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M20 6L9 17l-5-5');
+
+    svg.appendChild(path);
+
+    // Ajouter le texte de manière sécurisée
+    const textSpan = document.createElement('span');
+    textSpan.textContent = 'Préférences sauvegardées';
+
+    message.appendChild(svg);
+    message.appendChild(textSpan);
     document.body.appendChild(message);
 
     // Retirer le message après 2 secondes
@@ -161,14 +176,43 @@ async function initializeNotificationSettings() {
 function showErrorMessage(message) {
     const errorMsg = document.createElement('div');
     errorMsg.className = 'save-message error-message';
-    errorMsg.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="15" y1="9" x2="9" y2="15"/>
-            <line x1="9" y1="9" x2="15" y2="15"/>
-        </svg>
-        ${message}
-    `;
+
+    // Créer le SVG de manière sécurisée
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '16');
+    svg.setAttribute('height', '16');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2');
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', '12');
+    circle.setAttribute('cy', '12');
+    circle.setAttribute('r', '10');
+
+    const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line1.setAttribute('x1', '15');
+    line1.setAttribute('y1', '9');
+    line1.setAttribute('x2', '9');
+    line1.setAttribute('y2', '15');
+
+    const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line2.setAttribute('x1', '9');
+    line2.setAttribute('y1', '9');
+    line2.setAttribute('x2', '15');
+    line2.setAttribute('y2', '15');
+
+    svg.appendChild(circle);
+    svg.appendChild(line1);
+    svg.appendChild(line2);
+
+    // Ajouter le texte de manière sécurisée
+    const textSpan = document.createElement('span');
+    textSpan.textContent = message; // Utilisation sécurisée de textContent
+
+    errorMsg.appendChild(svg);
+    errorMsg.appendChild(textSpan);
     errorMsg.style.backgroundColor = 'var(--error-color)';
     document.body.appendChild(errorMsg);
 
