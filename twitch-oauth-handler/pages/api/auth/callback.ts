@@ -279,19 +279,19 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
                 showProgress(25, 'Préparation de la redirection...');
                 
                 setTimeout(() => {
-                    showProgress(50, 'Redirection vers l\'extension...');
+                    showProgress(50, 'Redirection vers l\\'extension...');
                     
                     const redirectUrl = 'moz-extension://' + extensionId + '/src/auth/auth.html#access_token=' + encodeURIComponent(token);
                     log.info('Redirection Firefox vers: ' + redirectUrl);
                     
                     setTimeout(() => {
-                        showProgress(75, 'Ouverture de l\'extension...');
+                        showProgress(75, 'Ouverture de l\\'extension...');
                         
                         try {
                             window.location.href = redirectUrl;
                         } catch (redirectError) {
                             log.error('Erreur de redirection: ' + redirectError.message);
-                            showError('Erreur lors de la redirection vers l\'extension. Vérifiez que l\'extension est installée.');
+                            showError('Erreur lors de la redirection vers l\\'extension. Vérifiez que l\\'extension est installée.');
                             return;
                         }
                         
@@ -308,7 +308,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
                 
                 setTimeout(() => {
                     showProgress(66, 'Connexion établie...');
-                    showSuccess('Connexion réussie ! Retournez sur l\'extension.');
+                    showSuccess('Connexion réussie ! Retournez sur l\\'extension.');
                     
                     setTimeout(() => {
                         showProgress(100, 'Fermeture automatique...');
@@ -325,7 +325,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
                     const hash = window.location.hash;
                     
                     if (!hash || hash.length < 2) {
-                        throw new Error('Aucun paramètre trouvé dans l\'URL');
+                        throw new Error('Aucun paramètre trouvé dans l\\'URL');
                     }
 
                     const params = new URLSearchParams(hash.substring(1));
