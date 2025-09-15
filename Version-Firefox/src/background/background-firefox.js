@@ -48,11 +48,15 @@ class TwitchAuth {
         const extensionUrl = browser.runtime.getURL('');
         const extensionId = extensionUrl.split('/')[2];
 
+        console.log('Firefox Background - Extension URL:', extensionUrl);
+        console.log('Firefox Background - Extension ID extrait:', extensionId);
+
         const csrf = (typeof crypto !== 'undefined' && crypto.randomUUID)
             ? crypto.randomUUID()
             : Math.random().toString(36).substring(2);
 
         const state = btoa(JSON.stringify({ csrf, extensionId }));
+        console.log('Firefox Background - State généré:', state);
 
         const params = new URLSearchParams({
             response_type: 'token',
@@ -414,7 +418,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     return await auth.initiateAuth();
 
                 case 'SAVE_TOKEN':
+                    console.log('Firefox Background - Réception du token pour sauvegarde');
                     await auth.saveToken(message.token);
+                    console.log('Firefox Background - Token sauvegardé, démarrage du monitoring');
                     startStreamChecking();
                     return { success: true };
 

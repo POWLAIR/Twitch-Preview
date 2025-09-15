@@ -5,33 +5,61 @@ const errorElement = document.getElementById('error');
 // Fonction principale
 async function handleAuth() {
     try {
+        // Log pour débogage
+        console.log('Firefox Auth - URL complète:', window.location.href);
+        console.log('Firefox Auth - Hash:', window.location.hash);
+
         // Récupère le token depuis le hash de l'URL
-        const params = new URLSearchParams(window.location.hash.substring(1));
+        const hash = window.location.hash;
+
+        // Vérifie si nous avons un hash
+        if (!hash || hash.length < 2) {
+            console.error('Firefox Auth - Aucun hash trouvé dans l\'URL');
+            showError("Aucun paramètre d'authentification trouvé dans l'URL");
+            return;
+        }
+
+        // Parse les paramètres du hash
+        const params = new URLSearchParams(hash.substring(1));
         const accessToken = params.get('access_token');
         const error = params.get('error');
         const errorDescription = params.get('error_description');
 
+        console.log('Firefox Auth - Token extrait:', accessToken ? 'Token présent' : 'Token absent');
+        console.log('Firefox Auth - Paramètres trouvés:', Array.from(params.keys()));
+
         if (error) {
+            console.error('Firefox Auth - Erreur OAuth:', error, errorDescription);
             showError(`Erreur d'authentification: ${error}${errorDescription ? ` - ${errorDescription}` : ''}`);
             return;
         }
 
         if (!accessToken) {
-            showError("Aucun token d'accès reçu");
+            console.error('Firefox Auth - Token manquant');
+            showError("Aucun token d'accès reçu. Vérifiez que l'authentification s'est correctement déroulée.");
             return;
         }
 
         // Envoie le token au background script
+        console.log('Firefox Auth - Envoi du token au background script...');
         const response = await browser.runtime.sendMessage({
             type: 'SAVE_TOKEN',
             token: accessToken
         });
 
-        if (response.success) {
+        console.log('Firefox Auth - Réponse du background:', response);
+
+        if (response && response.success) {
+            console.log('Firefox Auth - Token sauvegardé avec succès');
             messageElement.textContent = 'Authentification réussie !';
-            setTimeout(() => window.close(), 10);
+            setTimeout(() => {
+                console.log('Firefox Auth - Fermeture de la fenêtre');
+                window.close();
+            }, 1500);
         } else {
-            throw new Error(response.error || "Erreur lors de l'enregistrement du token");
+            const errorMsg = response?.error || "Erreur lors de l'enregistrement du token";
+            console.error('Firefox Auth - Erreur de sauvegarde:', errorMsg);
+            throw new Error(errorMsg);
         }
     } catch (error) {
         console.error('Erreur:', error);

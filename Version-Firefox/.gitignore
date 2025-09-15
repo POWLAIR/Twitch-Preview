@@ -1,0 +1,44 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+src/utils/env.js
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+web-ext-artifacts/
+
+# Fichiers de build
+*.zip
+
+# Fichiers d'éditeur
+*.swp
+*.swo
+*~
+
+# Fichiers de configuration personnels
+src/config.js
+config.local.js
+
+# Logs
+*.log
+logs/
+debug.log 
+.vercel

@@ -208,9 +208,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
             // Logging sécurisé
             const log = {
-                info: (msg) => console.log(\`[OAuth] \${msg}\`),
-                error: (msg) => console.error(\`[OAuth Error] \${msg}\`),
-                warn: (msg) => console.warn(\`[OAuth Warning] \${msg}\`)
+                info: (msg) => console.log('[OAuth] ' + msg),
+                error: (msg) => console.error('[OAuth Error] ' + msg),
+                warn: (msg) => console.warn('[OAuth Warning] ' + msg)
             };
 
             function showError(text) {
@@ -281,11 +281,19 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
                 setTimeout(() => {
                     showProgress(50, 'Redirection vers l\'extension...');
                     
-                    const redirectUrl = \`moz-extension://\${extensionId}/src/auth/auth.html#access_token=\${token}\`;
+                    const redirectUrl = 'moz-extension://' + extensionId + '/src/auth/auth.html#access_token=' + encodeURIComponent(token);
+                    log.info('Redirection Firefox vers: ' + redirectUrl);
                     
                     setTimeout(() => {
                         showProgress(75, 'Ouverture de l\'extension...');
-                        window.location.href = redirectUrl;
+                        
+                        try {
+                            window.location.href = redirectUrl;
+                        } catch (redirectError) {
+                            log.error('Erreur de redirection: ' + redirectError.message);
+                            showError('Erreur lors de la redirection vers l\'extension. Vérifiez que l\'extension est installée.');
+                            return;
+                        }
                         
                         setTimeout(() => {
                             showProgress(100, 'Fermeture en cours...');
@@ -329,8 +337,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
                     // Gestion des erreurs OAuth
                     if (error) {
                         const errorMsg = errorDescription 
-                            ? \`\${error}: \${errorDescription}\`
-                            : \`Erreur OAuth: \${error}\`;
+                            ? error + ': ' + errorDescription
+                            : 'Erreur OAuth: ' + error;
                         throw new Error(errorMsg);
                     }
 
@@ -345,14 +353,18 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
                     // Validation et décodage du state
                     const stateObj = validateState(state);
+                    log.info('State décodé avec succès. Extension ID: ' + stateObj.extensionId);
                     
                     // Détection du navigateur et redirection appropriée
                     const browser = detectBrowser();
-                    log.info(\`Navigateur détecté: \${browser}\`);
+                    log.info('Navigateur détecté: ' + browser);
+                    log.info('Token reçu (longueur): ' + token.length + ' caractères');
 
                     if (browser === 'firefox') {
+                        log.info('Déclenchement de la redirection Firefox');
                         handleFirefoxRedirect(token, stateObj.extensionId);
                     } else {
+                        log.info('Déclenchement de la redirection Chrome/autre');
                         handleChromeRedirect();
                     }
 
