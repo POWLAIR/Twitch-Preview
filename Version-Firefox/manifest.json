@@ -43,8 +43,7 @@
   "background": {
     "scripts": [
       "src/background/background-firefox.js"
-    ],
-    "persistent": true
+    ]
   },
   "web_accessible_resources": [
     {

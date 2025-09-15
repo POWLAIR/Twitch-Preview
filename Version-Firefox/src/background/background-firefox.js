@@ -395,7 +395,8 @@ const state = {
     maxCheckInterval: 5 * 60 * 1000, // 5 minutes
     isPolling: false,
     alarmName: 'streamCheckAlarm',
-    keepAliveInterval: 20 * 1000 // 20 secondes pour maintenir l'activité
+    keepAliveInterval: 20 * 1000, // 20 secondes pour maintenir l'activité
+    lastKeepalive: 0 // Timestamp du dernier keep-alive
 };
 
 // Fonction pour mettre à jour le badge
@@ -478,18 +479,47 @@ function stopStreamChecking() {
     updateBadge(0);
 }
 
-// Système Keep-Alive pour maintenir l'activité
+// Système Keep-Alive pour maintenir l'activité en Manifest V3
 let keepAliveTimer = null;
+let wakeLockPort = null;
 
 function startKeepAlive() {
     stopKeepAlive();
+
+    // Méthode 1: Keep-alive via alarms courtes
+    browser.alarms.create('keepAlive', {
+        delayInMinutes: 0.5, // 30 secondes
+        periodInMinutes: 0.5
+    });
+
+    // Méthode 2: Port de communication maintenu ouvert
+    try {
+        wakeLockPort = browser.runtime.connect({ name: 'keepAlive' });
+        wakeLockPort.onDisconnect.addListener(() => {
+            wakeLockPort = null;
+            setTimeout(startKeepAlive, 1000); // Reconnexion auto
+        });
+    } catch (error) {
+        console.error('Erreur port keepAlive:', error);
+    }
+
+    // Méthode 3: Timer classique en backup
     keepAliveTimer = setInterval(() => {
-        // Ping silencieux pour maintenir l'activité
         browser.runtime.getPlatformInfo().catch(() => { });
+        // Force un petit calcul pour maintenir l'activité
+        const now = Date.now();
+        state.lastKeepalive = now;
     }, state.keepAliveInterval);
 }
 
 function stopKeepAlive() {
+    browser.alarms.clear('keepAlive');
+
+    if (wakeLockPort) {
+        wakeLockPort.disconnect();
+        wakeLockPort = null;
+    }
+
     if (keepAliveTimer) {
         clearInterval(keepAliveTimer);
         keepAliveTimer = null;
@@ -568,6 +598,15 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === state.alarmName) {
         checkNewStreams();
+    } else if (alarm.name === 'keepAlive') {
+        // Keep-alive ping - maintient le service worker actif
+        const now = Date.now();
+        state.lastKeepalive = now;
+
+        // Vérifier si on doit redémarrer la surveillance
+        if (auth.token && !keepAliveTimer) {
+            startKeepAlive();
+        }
     }
 });
 
@@ -600,6 +639,20 @@ browser.runtime.onStartup.addListener(async () => {
 
 browser.runtime.onInstalled.addListener(async () => {
     await restoreMonitoring();
+});
+
+// Gestionnaire de ports pour le keep-alive
+browser.runtime.onConnect.addListener((port) => {
+    if (port.name === 'keepAlive') {
+        port.onDisconnect.addListener(() => {
+            // Le port se déconnecte - on peut relancer le keep-alive si nécessaire
+            setTimeout(() => {
+                if (auth.token && keepAliveTimer) {
+                    startKeepAlive();
+                }
+            }, 1000);
+        });
+    }
 });
 
 // Fonction pour restaurer la surveillance
