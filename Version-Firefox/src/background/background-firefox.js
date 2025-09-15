@@ -310,8 +310,44 @@ class NotificationManager {
         this.cleanOldNotifications();
     }
 
+    async shouldNotifyStream(stream) {
+        // 1. Vérifier si les notifications sont activées
+        if (!this.notificationPreferences.enabled) {
+            return false;
+        }
+
+        // 2. Vérifier si on a déjà notifié ce stream récemment
+        const streamKey = `${stream.user_id}_${stream.started_at}`;
+        if (this.lastNotifiedStreams.has(streamKey)) {
+            return false;
+        }
+
+        // 3. Si mode "favoris uniquement", vérifier les favoris
+        if (this.notificationPreferences.favoritesOnly) {
+            try {
+                const storage = await browser.storage.local.get('favorites');
+                const favorites = storage.favorites || [];
+                return favorites.includes(stream.user_id);
+            } catch (error) {
+                console.error('Erreur lors de la vérification des favoris:', error);
+                return true; // En cas d'erreur, notifier quand même
+            }
+        }
+
+        return true; // Notifier par défaut
+    }
+
     async createStreamNotification(stream) {
         const notificationId = `stream_${stream.user_id}_${Date.now()}`;
+        const streamKey = `${stream.user_id}_${stream.started_at}`;
+
+        // Marquer comme notifié
+        this.lastNotifiedStreams.add(streamKey);
+
+        // Sauvegarder la liste des streams notifiés
+        await browser.storage.local.set({
+            lastNotifiedStreams: Array.from(this.lastNotifiedStreams)
+        });
 
         await browser.notifications.create(notificationId, {
             type: 'basic',
@@ -394,7 +430,10 @@ async function checkNewStreams() {
 
         for (const [streamId, stream] of currentStreams) {
             if (!state.activeStreams.has(streamId)) {
-                await notificationManager.createStreamNotification(stream);
+                // Vérifier si on doit notifier ce stream
+                if (await notificationManager.shouldNotifyStream(stream)) {
+                    await notificationManager.createStreamNotification(stream);
+                }
             }
         }
 
