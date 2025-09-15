@@ -2,12 +2,13 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-1.2.0-purple)](https://github.com/powlair/twitch-preview/releases)
+[![Version](https://img.shields.io/badge/version-1.2.2-purple)](https://github.com/powlair/twitch-preview/releases)
 [![Licence](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Firefox](https://img.shields.io/badge/Firefox-Manifest%20V3-orange?logo=firefox)](Version-Firefox/)
+[![Chrome](https://img.shields.io/badge/Chrome-Manifest%20V3-green?logo=googlechrome)](Version-Chrome/)
 [![OAuth](https://img.shields.io/badge/OAuth-Handler-success?logo=vercel)](twitch-oauth-handler/)
 
-**Prévisualisez vos streams Twitch préférés directement depuis votre navigateur**
+**Extension de navigation Twitch avec notifications en temps réel et surveillance continue**
 
 [Installation](#installation) •
 [Fonctionnalités](#fonctionnalités) •
@@ -23,17 +24,17 @@
       <td align="center" width="33%">
         <img src="docs/images/login.png" alt="Page de connexion" width="250"/><br/>
         <b>Page de connexion</b><br/>
-        <sub>Interface de connexion avec authentification Twitch</sub>
+        <sub>Interface de connexion avec authentification Twitch sécurisée</sub>
       </td>
       <td align="center" width="33%">
         <img src="docs/images/streams.png" alt="Streams en direct" width="250"/><br/>
         <b>Streams en direct</b><br/>
-        <sub>Liste des streams en direct avec prévisualisation au survol</sub>
+        <sub>Liste des streams avec notifications en temps réel</sub>
       </td>
       <td align="center" width="33%">
         <img src="docs/images/channels.png" alt="Chaînes suivies" width="250"/><br/>
         <b>Chaînes suivies</b><br/>
-        <sub>Gestion des chaînes suivies et des favoris</sub>
+        <sub>Gestion des chaînes suivies et système de favoris</sub>
       </td>
     </tr>
   </table>
@@ -42,21 +43,30 @@
 ## Fonctionnalités
 
 ### Fonctionnalités principales
-- Prévisualisation instantanée des streams en direct
-- Liste organisée de vos chaînes suivies avec statut en temps réel
-- Système de favoris pour marquer vos streamers préférés
-- Notifications push personnalisables pour les nouveaux streams
-- Interface moderne avec thème sombre Twitch
-- Actualisation automatique des données toutes les 30 secondes
-- Design responsive adapté à tous les écrans
-- Authentification OAuth 2.0 sécurisée via Twitch
+- **Notifications en temps réel** : Alertes instantanées pour les nouveaux streams
+- **Système de favoris** : Notifications ciblées pour vos streamers préférés
+- **Interface moderne** : Design Twitch avec thème sombre élégant
+- **Surveillance continue** : Fonctionne 24/7, même navigateur fermé
+- **Cache intelligent** : Performance optimisée avec cache persistant
+- **Gestion personnalisée** : Filtrage avancé par favoris et préférences
+- **Sécurité renforcée** : OAuth 2.0 avec validation CSRF
+- **Multi-navigateur** : Compatible Firefox et Chrome
 
-### Nouvelles fonctionnalités v1.2.0
-- Manifest V3 compatible avec les dernières versions de Firefox
-- Service OAuth dédié pour une authentification optimisée
-- Options redesignées avec statistiques d'utilisation
-- Performance améliorée avec bundling optimisé
-- Architecture nettoyée sans code mort
+### Nouveautés v1.2.2
+- **Service persistant** : Extension active en permanence (Manifest V3)
+- **Notifications intelligentes** : Système anti-doublon avec cache 5h
+- **Interface améliorée** : Nouvelle disposition avec icônes d'actions
+- **Keep-alive avancé** : Triple système de maintien d'activité
+- **Cache optimisé** : Données persistantes et récupération automatique
+- **Logs nettoyés** : Version production sans debug
+- **UX améliorée** : Interactions fluides et animations
+
+### Système de notifications
+- **Détection automatique** : Surveillance des streams toutes les 1-5 minutes
+- **Filtrage intelligent** : Global ou favoris uniquement
+- **Clic-action** : Ouvre directement le stream sur Twitch
+- **Anti-spam** : Pas de notifications multiples pour le même stream
+- **Persistance** : Fonctionne même Firefox fermé
 
 ## Installation
 
@@ -76,7 +86,23 @@
 </details>
 
 <details>
-<summary><b> Installation pour développeurs</b></summary>
+<summary><b> Chrome</b></summary>
+
+### Installation manuelle
+1. Téléchargez le dossier `Version-Chrome/`
+2. Ouvrez Chrome et allez dans `chrome://extensions/`
+3. Activez le "Mode développeur"
+4. Cliquez sur "Charger l'extension non empaquetée"
+5. Sélectionnez le dossier `Version-Chrome/`
+
+### Requirements Chrome
+- Chrome 88+ (Manifest V3 support)
+- Extensions activées
+
+</details>
+
+<details>
+<summary><b>⚙️ Installation pour développeurs</b></summary>
 
 ### 1. Cloner le projet
 ```bash
@@ -86,24 +112,27 @@ cd twitch-preview
 
 ### 2. Configuration API Twitch
 - Créez une application sur [Twitch Developer Console](https://dev.twitch.tv/console)
-- Dans `Version-Firefox/src/utils/env.js`, configurez :
+- Dans `Version-Firefox/src/background/background-firefox.js`, configurez :
   ```javascript
-  export const CLIENT_ID = 'votre_client_id';
-  export const CLIENT_SECRET = 'votre_client_secret';
-  export const REDIRECT_URI = 'https://twitch-preview.vercel.app/api/auth/callback';
+  const TWITCH_API = {
+      CLIENT_ID: 'votre_client_id',
+      CLIENT_SECRET: 'votre_client_secret',
+      REDIRECT_URI: 'https://twitch-preview.vercel.app/api/auth/callback'
+  };
   ```
 
-### 3. Déployer le service OAuth (optionnel)
+### 3. Déployer le service OAuth
 ```bash
 cd twitch-oauth-handler
 npm install
 npm run build
-# Déployer sur Vercel ou autre plateforme
+npm run dev  # Pour développement local
+# Ou déployer sur Vercel/Netlify pour production
 ```
 
 ### 4. Installer l'extension
 - **Firefox** : `about:debugging` > "Ce Firefox" > "Charger un module temporaire"
-- Sélectionner `Version-Firefox/manifest.json`
+- **Chrome** : `chrome://extensions/` > "Mode développeur" > "Charger l'extension non empaquetée"
 
 </details>
 
@@ -119,18 +148,24 @@ Twitch-Preview/
 │   └── src/
 │       ├── assets/icons/           # Icônes extension
 │       ├── auth/                   # Authentification OAuth
-│       ├── background/             # Service Worker
-│       │   └── background-firefox.js  # Script principal bundlé
+│       │   ├── auth.html           # Page callback
+│       │   └── auth.js             # Script OAuth
+│       ├── background/             # Service Worker persistant
+│       │   └── background-firefox.js  # Script principal avec keep-alive
 │       ├── options/                # Page des options
 │       │   ├── options.html        # Interface options
 │       │   ├── options.css         # Styles modernes
-│       │   └── options-firefox.js  # Script options bundlé
+│       │   └── options-firefox.js  # Script options
 │       ├── popup/                  # Interface principale
 │       │   ├── index.html          # Structure popup
 │       │   ├── style.css           # Styles popup
-│       │   └── popup-firefox.js    # Script popup bundlé
+│       │   └── popup-firefox.js    # Script popup
 │       └── utils/
 │           └── env.js              # Configuration API
+│
+├── Version-Chrome/               # Extension Chrome (Manifest V3)
+│   ├── manifest.json               # Configuration Chrome
+│   └── src/                        # Structure similaire à Firefox
 │
 ├── twitch-oauth-handler/         # Service OAuth Next.js
 │   ├── pages/
@@ -145,33 +180,75 @@ Twitch-Preview/
 ```
 
 ### **Flux d'authentification**
-1. **Extension** → Ouvre popup OAuth Twitch
+1. **Extension** → Ouvre popup OAuth Twitch avec state sécurisé
 2. **Twitch** → Utilisateur autorise l'application
-3. **Service OAuth** → Traite le callback et valide
-4. **Extension** → Reçoit le token et stocke sécurisé
+3. **Service OAuth** → Traite le callback, valide le state et extrait le token
+4. **Extension** → Reçoit le token via redirection et stocke sécurisé
+5. **Surveillance** → Démarre automatiquement la surveillance des streams
+
+### **Flux de notifications**
+1. **Alarme Firefox** → Déclenche vérification toutes les 1-5 minutes
+2. **API Twitch** → Récupère les streams actuels des chaînes suivies
+3. **Comparaison** → Détecte les nouveaux streams vs cache précédent
+4. **Filtrage** → Vérifie préférences (global/favoris) et anti-doublon
+5. **Notification** → Crée notification Firefox native avec avatar
+6. **Action** → Clic ouvre le stream sur Twitch.tv
 
 </details>
 
 <details>
-<summary><b> Configuration et options</b></summary>
+<summary><b>Configuration et options</b></summary>
 
 ### **Options disponibles**
 - **Notifications** : Activer/désactiver les alertes push
 - **Favoris uniquement** : Limiter les notifications aux streamers favoris
 - **Statistiques** : Visualiser les métriques d'utilisation
-- **Actualisation auto** : Rafraîchissement toutes les 30 secondes
-- **Gestion favoris** : Ajouter/supprimer des streamers favoris
+- **Cache intelligent** : Validation token toutes les 5 heures
+- **Keep-alive** : Maintien d'activité automatique
 
 ### **Permissions requises (Manifest V3)**
 - `storage` : Stockage sécurisé des préférences et tokens
 - `notifications` : Affichage des alertes de nouveaux streams
+- `alarms` : Surveillance continue et keep-alive
 - `action` : Badge et popup de l'extension
 - `host_permissions` : Accès aux APIs Twitch et service OAuth
 
-### **URLs autorisées**
+### **🌐 URLs autorisées**
 - `https://api.twitch.tv/*` : API Helix Twitch
 - `https://id.twitch.tv/*` : Service d'authentification Twitch
 - `https://twitch-preview.vercel.app/*` : Service OAuth handler
+- `https://embed.twitch.tv/*` : Intégration player Twitch
+- `https://player.twitch.tv/*` : Player Twitch
+
+</details>
+
+<details>
+<summary><b>🔧 Fonctionnement technique</b></summary>
+
+### **Système Keep-Alive (Manifest V3)**
+```javascript
+// Triple système pour maintenir l'activité
+1. Alarmes courtes (30 secondes)
+2. Port de communication maintenu
+3. Timer classique en backup
+```
+
+### **Cache intelligent**
+```javascript
+// Validation token : 5 heures
+// Données utilisateur : 5 minutes  
+// Streams : 2 minutes
+// Anti-doublon notifications : 6 heures
+```
+
+### **Logique de notifications**
+```javascript
+// Conditions pour notifier :
+1. Notifications activées
+2. Stream pas déjà notifié (clé: user_id_started_at)
+3. Si mode favoris : streamer dans la liste favoris
+4. Stream détecté comme nouveau (pas dans cache précédent)
+```
 
 </details>
 
@@ -179,12 +256,13 @@ Twitch-Preview/
 
 ### **Mesures de sécurité**
 - **OAuth 2.0** : Authentification sécurisée via Twitch
-- **Stockage chiffré** : Tokens stockés de manière sécurisée
-- **CSP stricte** : Content Security Policy renforcée
-- **Aucune collecte** : Aucune donnée personnelle n'est collectée
-- **HTTPS only** : Toutes les communications sont chiffrées
-- **Validation state** : Protection CSRF avec validation du state
-- **Headers sécurisés** : X-Frame-Options, X-Content-Type-Options, etc.
+- **State validation** : Protection CSRF avec validation du state
+- **Token chiffré** : Stockage sécurisé dans browser.storage.local
+- **CSP stricte** : Content Security Policy renforcée Manifest V3
+- **HTTPS only** : Toutes les communications chiffrées
+- **Headers sécurisés** : X-Frame-Options, X-Content-Type-Options
+- **Aucune collecte** : Aucune donnée personnelle collectée ou transmise
+- **Cache local** : Données stockées uniquement localement
 
 ## Contribution
 
@@ -199,33 +277,46 @@ Les contributions sont les bienvenues ! Pour contribuer :
 
 ### **Guidelines de développement**
 - Respectez le style de code existant
+- Testez sur Firefox ET Chrome
 - Documentez les nouvelles fonctionnalités
-- Testez vos modifications sur Firefox
-- Mettez à jour la documentation si nécessaire
-- Vérifiez que la sécurité n'est pas compromise
+- Vérifiez la compatibilité Manifest V3
+- Maintenez la sécurité et la performance
+- Nettoyez les logs de debug
 
 ### **Rapporter un bug**
 - Utilisez les [GitHub Issues](https://github.com/powlair/twitch-preview/issues)
-- Décrivez le problème avec des étapes de reproduction
-- Incluez votre version de navigateur et d'OS
+- Précisez le navigateur et la version
+- Incluez les étapes de reproduction
+- Ajoutez les logs d'erreur si disponibles
+
+## Statistiques du projet
+
+- **Version actuelle** : 1.2.2
+- **Compatible** : Firefox 109+ • Chrome 88+
+- **Manifest** : V3 (service workers)
+- **OAuth** : Service dédié sécurisé
+- **Notifications** : Temps réel 24/7
+- **Cache** : Intelligent et persistant
+- **Performance** : Optimisée avec keep-alive
+- **Langue** : Français
 
 ## Licence
 
 Distribué sous la **MIT License**. Voir [`LICENSE`](LICENSE) pour plus d'informations.
 
-## Statistiques du projet
+## Roadmap
 
-- **Version actuelle** : 1.2.0
-- **Compatible** : Firefox 109+
-- **Manifest** : V3
-- **OAuth** : Service dédié
-- **Responsive** : Oui
-- **Langue** : Français
+### **🔮 Fonctionnalités prévues**
+- [ ] Support Safari (Manifest V3)
+- [ ] Mode hors ligne avec cache étendu
+- [ ] Intégration chat Twitch
+- [ ] Thèmes personnalisables
+- [ ] Export/import des paramètres
+- [ ] Analytics d'utilisation (local)
 
 ---
 
 <div align="center">
   <sub>🎮 Fait avec passion par <strong>PowlAIR</strong></br>
-   • Pour la communauté Twitch</sub>
+   • Pour la communauté Twitch française</sub>
 </div>
-
