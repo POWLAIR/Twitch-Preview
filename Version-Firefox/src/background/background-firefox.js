@@ -354,11 +354,12 @@ const notificationManager = new NotificationManager();
 const state = {
     activeStreams: new Map(),
     lastCheck: 0,
-    checkInterval: 2 * 60 * 1000,
-    minCheckInterval: 1 * 60 * 1000,
-    maxCheckInterval: 5 * 60 * 1000,
+    checkInterval: 2 * 60 * 1000, // 2 minutes
+    minCheckInterval: 1 * 60 * 1000, // 1 minute
+    maxCheckInterval: 5 * 60 * 1000, // 5 minutes
     isPolling: false,
-    timeoutId: null
+    alarmName: 'streamCheckAlarm',
+    keepAliveInterval: 20 * 1000 // 20 secondes pour maintenir l'activité
 };
 
 // Fonction pour mettre à jour le badge
@@ -416,26 +417,44 @@ async function checkNewStreams() {
     }
 }
 
+// Planifier la prochaine vérification avec les alarmes
 function scheduleNextCheck() {
-    if (state.timeoutId) {
-        clearTimeout(state.timeoutId);
-    }
-    state.timeoutId = setTimeout(checkNewStreams, state.checkInterval);
+    const delayInMinutes = Math.max(1, Math.floor(state.checkInterval / (60 * 1000)));
+    browser.alarms.create(state.alarmName, { delayInMinutes });
 }
 
+// Démarrer la surveillance des streams
 function startStreamChecking() {
-    stopStreamChecking();
-    checkNewStreams();
+    stopStreamChecking(); // Arrêter toute surveillance existante
+    checkNewStreams(); // Vérifier immédiatement
+    startKeepAlive(); // Maintenir l'activité
 }
 
+// Arrêter la surveillance des streams
 function stopStreamChecking() {
-    if (state.timeoutId) {
-        clearTimeout(state.timeoutId);
-        state.timeoutId = null;
-    }
+    browser.alarms.clear(state.alarmName);
+    stopKeepAlive();
     state.activeStreams.clear();
     state.lastCheck = 0;
     updateBadge(0);
+}
+
+// Système Keep-Alive pour maintenir l'activité
+let keepAliveTimer = null;
+
+function startKeepAlive() {
+    stopKeepAlive();
+    keepAliveTimer = setInterval(() => {
+        // Ping silencieux pour maintenir l'activité
+        browser.runtime.getPlatformInfo().catch(() => { });
+    }, state.keepAliveInterval);
+}
+
+function stopKeepAlive() {
+    if (keepAliveTimer) {
+        clearInterval(keepAliveTimer);
+        keepAliveTimer = null;
+    }
 }
 
 // Gestion des messages
@@ -453,7 +472,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
                 case 'CHECK_AUTH':
                     const isValid = await auth.validateToken();
-                    if (isValid && !state.timeoutId) {
+                    if (isValid && !keepAliveTimer) {
                         startStreamChecking();
                     }
                     return { isAuthenticated: isValid };
@@ -481,6 +500,18 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     stopStreamChecking();
                     return { success: true };
 
+                case 'GET_STATUS':
+                    return {
+                        success: true,
+                        status: {
+                            isAuthenticated: !!auth.token,
+                            isMonitoring: !!keepAliveTimer,
+                            activeStreamsCount: state.activeStreams.size,
+                            lastCheck: state.lastCheck,
+                            lastValidation: auth.lastValidation
+                        }
+                    };
+
                 default:
                     throw new Error('Type de message non reconnu');
             }
@@ -492,6 +523,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     handleMessage().then(sendResponse);
     return true;
+});
+
+// Gestion des alarmes pour maintenir la surveillance
+browser.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === state.alarmName) {
+        checkNewStreams();
+    }
 });
 
 // Gestion des clics sur les notifications
@@ -506,4 +544,39 @@ browser.notifications.onClicked.addListener((notificationId) => {
         }
     }
 });
+
+// Maintenir l'activité même en cas de suspension
+browser.runtime.onSuspend.addListener(() => {
+    // Sauvegarder l'état avant suspension
+    browser.storage.local.set({
+        isMonitoring: !!keepAliveTimer,
+        lastActiveCheck: Date.now()
+    });
+});
+
+// Reprendre l'activité après réveil
+browser.runtime.onStartup.addListener(async () => {
+    await restoreMonitoring();
+});
+
+browser.runtime.onInstalled.addListener(async () => {
+    await restoreMonitoring();
+});
+
+// Fonction pour restaurer la surveillance
+async function restoreMonitoring() {
+    try {
+        const storage = await browser.storage.local.get(['isMonitoring', 'lastActiveCheck']);
+
+        // Si l'extension surveillait avant et qu'on a un token valide
+        if (storage.isMonitoring && auth.token) {
+            const isValid = await auth.validateToken();
+            if (isValid) {
+                startStreamChecking();
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors de la restauration de la surveillance:', error);
+    }
+}
 
