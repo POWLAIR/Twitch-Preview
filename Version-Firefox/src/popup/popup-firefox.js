@@ -101,11 +101,19 @@ async function checkAuthentication() {
 
 // Load user data
 async function loadUserData() {
-    if (cachedUserData && Date.now() - cachedUserData.timestamp < CACHE.USER_DATA_REFRESH_INTERVAL) {
-        updateUserInfo(cachedUserData.data);
-        return;
+    // Essayer de charger depuis le cache persistant d'abord
+    try {
+        const storage = await browser.storage.local.get(['cachedUserData']);
+        if (storage.cachedUserData && Date.now() - storage.cachedUserData.timestamp < CACHE.USER_DATA_REFRESH_INTERVAL) {
+            cachedUserData = storage.cachedUserData;
+            updateUserInfo(cachedUserData.data);
+            return;
+        }
+    } catch (error) {
+        console.error('Error loading cached user data:', error);
     }
 
+    // Cache expiré ou inexistant - récupérer depuis l'API
     try {
         const response = await browser.runtime.sendMessage({ type: 'GET_USER_DATA' });
         if (response.success) {
@@ -113,6 +121,8 @@ async function loadUserData() {
                 data: response.userData,
                 timestamp: Date.now()
             };
+            // Sauvegarder dans le cache persistant
+            await browser.storage.local.set({ cachedUserData });
             updateUserInfo(response.userData);
         }
     } catch (error) {
@@ -385,6 +395,9 @@ async function handleLogout() {
             cachedStreams = null;
             cachedUserData = null;
             lastRefreshTime = 0;
+
+            // Nettoyer le cache persistant
+            await browser.storage.local.remove(['cachedUserData', 'cachedStreams', 'lastTokenValidation']);
 
             // Réinitialiser le badge
             await updateBadgeCount(0);

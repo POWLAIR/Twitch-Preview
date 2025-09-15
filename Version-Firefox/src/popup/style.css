@@ -77,12 +77,25 @@ body::-webkit-scrollbar {
 .user-info {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     background-color: var(--background-light);
-    padding: 8px;
+    padding: 12px;
     border-radius: 8px;
     margin-bottom: 16px;
-    justify-content: space-between;
+    border: 1px solid rgba(145, 70, 255, 0.2);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .user-avatar {
@@ -95,6 +108,38 @@ body::-webkit-scrollbar {
 .user-name {
     font-size: 14px;
     font-weight: 500;
+    color: var(--text-color);
+}
+
+
+.button-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.button-icon:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--text-color);
+    transform: translateY(-1px);
+}
+
+.button-icon.logout:hover {
+    background-color: rgba(255, 71, 71, 0.2);
+    color: var(--error-color);
+}
+
+.button-icon svg {
+    width: 16px;
+    height: 16px;
 }
 
 /* Button styles */

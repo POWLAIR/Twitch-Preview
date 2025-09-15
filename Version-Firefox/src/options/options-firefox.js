@@ -101,7 +101,6 @@ async function initializeNotificationSettings() {
     const favoritesOnlyNotifications = document.getElementById('favoritesOnlyNotifications');
 
     if (!enableNotifications || !favoritesOnlyNotifications) {
-        console.error('Éléments de notification non trouvés');
         return;
     }
 
@@ -409,7 +408,6 @@ function createEntranceAnimation() {
 
 // Initialisation principale
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Initialisation des options Twitch Preview Firefox...');
 
     try {
         // Créer les animations CSS
@@ -421,7 +419,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         initializeVisualEffects();
         initializeResponsiveFeatures();
 
-        console.log('Options initialisées avec succès');
     } catch (error) {
         console.error('Erreur lors de l\'initialisation des options:', error);
         showErrorMessage('Erreur lors de l\'initialisation');

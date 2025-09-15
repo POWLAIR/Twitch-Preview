@@ -16,6 +16,8 @@ const TWITCH_API = {
 class TwitchAuth {
     constructor() {
         this.token = null;
+        this.lastValidation = 0;
+        this.validationCacheDuration = 5 * 60 * 60 * 1000; // 5 hours
         this.loadTokenFromStorage();
     }
 
@@ -26,8 +28,9 @@ class TwitchAuth {
     };
 
     async loadTokenFromStorage() {
-        const data = await browser.storage.local.get('twitchToken');
+        const data = await browser.storage.local.get(['twitchToken', 'lastTokenValidation']);
         this.token = data.twitchToken || null;
+        this.lastValidation = data.lastTokenValidation || 0;
     }
 
     async saveToken(token) {
@@ -37,7 +40,8 @@ class TwitchAuth {
 
     async clearToken() {
         this.token = null;
-        await browser.storage.local.remove('twitchToken');
+        this.lastValidation = 0;
+        await browser.storage.local.remove(['twitchToken', 'lastTokenValidation']);
     }
 
     isAuthenticated() {
@@ -48,15 +52,12 @@ class TwitchAuth {
         const extensionUrl = browser.runtime.getURL('');
         const extensionId = extensionUrl.split('/')[2];
 
-        console.log('Firefox Background - Extension URL:', extensionUrl);
-        console.log('Firefox Background - Extension ID extrait:', extensionId);
 
         const csrf = (typeof crypto !== 'undefined' && crypto.randomUUID)
             ? crypto.randomUUID()
             : Math.random().toString(36).substring(2);
 
         const state = btoa(JSON.stringify({ csrf, extensionId }));
-        console.log('Firefox Background - State généré:', state);
 
         const params = new URLSearchParams({
             response_type: 'token',
@@ -77,8 +78,14 @@ class TwitchAuth {
         });
     }
 
-    async validateToken() {
+    async validateToken(forceValidation = false) {
         if (!this.token) return false;
+
+        // Cache de validation - évite les appels API trop fréquents
+        const now = Date.now();
+        if (!forceValidation && (now - this.lastValidation) < this.validationCacheDuration) {
+            return true; // Token considéré comme valide si récemment validé
+        }
 
         try {
             const response = await fetch(TWITCH_API.VALIDATE_URL, {
@@ -87,7 +94,19 @@ class TwitchAuth {
                 }
             });
 
-            return response.ok;
+            const isValid = response.ok;
+            if (isValid) {
+                this.lastValidation = now;
+                // Sauvegarder le timestamp de validation
+                await browser.storage.local.set({
+                    lastTokenValidation: now
+                });
+            } else {
+                // Token invalide - le supprimer
+                await this.clearToken();
+            }
+
+            return isValid;
         } catch (error) {
             console.error('Erreur de validation du token:', error);
             return false;
@@ -320,6 +339,17 @@ class NotificationManager {
 const auth = new TwitchAuth();
 const notificationManager = new NotificationManager();
 
+// Initialisation asynchrone au démarrage
+(async () => {
+    await auth.loadTokenFromStorage();
+    await notificationManager.initialize();
+
+    // Démarrer la surveillance si déjà authentifié
+    if (auth.token && await auth.validateToken()) {
+        startStreamChecking();
+    }
+})();
+
 // État global pour le suivi des streams
 const state = {
     activeStreams: new Map(),
@@ -348,7 +378,6 @@ async function checkNewStreams() {
         state.isPolling = true;
 
         if (!auth.token || !(await auth.validateToken())) {
-            console.log('Token invalide, arrêt de la surveillance');
             stopStreamChecking();
             return;
         }
@@ -418,9 +447,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     return await auth.initiateAuth();
 
                 case 'SAVE_TOKEN':
-                    console.log('Firefox Background - Réception du token pour sauvegarde');
                     await auth.saveToken(message.token);
-                    console.log('Firefox Background - Token sauvegardé, démarrage du monitoring');
                     startStreamChecking();
                     return { success: true };
 
@@ -480,5 +507,3 @@ browser.notifications.onClicked.addListener((notificationId) => {
     }
 });
 
-// Initialiser le notificationManager au démarrage
-notificationManager.initialize();

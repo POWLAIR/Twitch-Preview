@@ -5,9 +5,6 @@ const errorElement = document.getElementById('error');
 // Fonction principale
 async function handleAuth() {
     try {
-        // Log pour débogage
-        console.log('Firefox Auth - URL complète:', window.location.href);
-        console.log('Firefox Auth - Hash:', window.location.hash);
 
         // Récupère le token depuis le hash de l'URL
         const hash = window.location.hash;
@@ -25,8 +22,6 @@ async function handleAuth() {
         const error = params.get('error');
         const errorDescription = params.get('error_description');
 
-        console.log('Firefox Auth - Token extrait:', accessToken ? 'Token présent' : 'Token absent');
-        console.log('Firefox Auth - Paramètres trouvés:', Array.from(params.keys()));
 
         if (error) {
             console.error('Firefox Auth - Erreur OAuth:', error, errorDescription);
@@ -41,19 +36,14 @@ async function handleAuth() {
         }
 
         // Envoie le token au background script
-        console.log('Firefox Auth - Envoi du token au background script...');
         const response = await browser.runtime.sendMessage({
             type: 'SAVE_TOKEN',
             token: accessToken
         });
 
-        console.log('Firefox Auth - Réponse du background:', response);
-
         if (response && response.success) {
-            console.log('Firefox Auth - Token sauvegardé avec succès');
             messageElement.textContent = 'Authentification réussie !';
             setTimeout(() => {
-                console.log('Firefox Auth - Fermeture de la fenêtre');
                 window.close();
             }, 1500);
         } else {
