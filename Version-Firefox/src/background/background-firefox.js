@@ -618,7 +618,7 @@ browser.notifications.onClicked.addListener((notificationId) => {
         // Extraire l'ID utilisateur et timestamp du notificationId
         const parts = notificationId.replace('stream_', '').split('_');
         const userId = parts[0];
-        
+
         // Trouver le stream correspondant dans les streams actifs
         let targetStream = null;
         for (const [streamId, stream] of state.activeStreams) {
@@ -627,13 +627,13 @@ browser.notifications.onClicked.addListener((notificationId) => {
                 break;
             }
         }
-        
+
         if (targetStream) {
             // Ouvrir le stream sur Twitch
             browser.tabs.create({
                 url: `https://twitch.tv/${targetStream.user_login}`
             });
-            
+
             // Fermer la notification après clic
             browser.notifications.clear(notificationId);
         }
