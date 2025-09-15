@@ -349,15 +349,17 @@ class NotificationManager {
             lastNotifiedStreams: Array.from(this.lastNotifiedStreams)
         });
 
-        await browser.notifications.create(notificationId, {
+        // Options de notification compatibles Firefox
+        const notificationOptions = {
             type: 'basic',
             iconUrl: stream.profile_image_url,
             title: `${stream.user_name} est en live !`,
-            message: `Joue à ${stream.game_name}\n${stream.title}`,
-            buttons: [
-                { title: 'Regarder le stream' }
-            ]
-        });
+            message: `Joue à ${stream.game_name}\n${stream.title}\n\nCliquez pour ouvrir le stream`
+        };
+
+        // Firefox ne supporte pas les boutons dans les notifications
+        // On utilise juste le clic sur la notification elle-même
+        await browser.notifications.create(notificationId, notificationOptions);
     }
 
     cleanOldNotifications() {
@@ -612,13 +614,28 @@ browser.alarms.onAlarm.addListener((alarm) => {
 
 // Gestion des clics sur les notifications
 browser.notifications.onClicked.addListener((notificationId) => {
-    if (notificationId.startsWith('stream-')) {
-        const streamId = notificationId.replace('stream-', '');
-        const stream = state.activeStreams.get(streamId);
-        if (stream) {
+    if (notificationId.startsWith('stream_')) {
+        // Extraire l'ID utilisateur et timestamp du notificationId
+        const parts = notificationId.replace('stream_', '').split('_');
+        const userId = parts[0];
+        
+        // Trouver le stream correspondant dans les streams actifs
+        let targetStream = null;
+        for (const [streamId, stream] of state.activeStreams) {
+            if (stream.user_id === userId) {
+                targetStream = stream;
+                break;
+            }
+        }
+        
+        if (targetStream) {
+            // Ouvrir le stream sur Twitch
             browser.tabs.create({
-                url: `https://twitch.tv/${stream.user_login}`
+                url: `https://twitch.tv/${targetStream.user_login}`
             });
+            
+            // Fermer la notification après clic
+            browser.notifications.clear(notificationId);
         }
     }
 });
